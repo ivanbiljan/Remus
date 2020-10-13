@@ -52,10 +52,9 @@ namespace Remus {
             _handler = handler;
 
             var parameters = handler.GetParameters();
-            for (var i = 0; i < parameters.Length; i++) {
+            for (var i = 0; i < parameters.Length; i++) { // for loops are faster than foreach, especially on arrays
                 var parameter = parameters[i];
                 var flagAttribute = parameter.GetCustomAttribute<FlagAttribute>();
-                var optionAttribute = parameter.GetCustomAttribute<OptionalArgumentAttribute>();
                 if (!(flagAttribute is null) && parameter.ParameterType == typeof(bool)) {
                     if (!string.IsNullOrWhiteSpace(flagAttribute.LongName)) {
                         _flags[flagAttribute.LongName] = i;
@@ -63,8 +62,9 @@ namespace Remus {
                     if (!string.IsNullOrWhiteSpace(flagAttribute.ShortName)) {
                         _flags[flagAttribute.ShortName] = i;
                     }
-                } else if (!(optionAttribute is null)) {
-                    _options[optionAttribute.Name] = i;
+                } else if (parameter.IsOptional) {
+                    var optionName = parameter.GetCustomAttribute<OptionalArgumentAttribute>()?.Name ?? parameter.Name!;
+                    _options[optionName] = i;
                 }
                 else {
                     if (_flags.Count > 0 || _options.Count > 0) {
@@ -78,6 +78,7 @@ namespace Remus {
 
         internal void Run(ICommandSender sender, string input) {
             // Generic command syntax: commandname [options/flags] requiredArg1 requiredArg2 "required arg 3"
+            
             var handlerParameters = _handler.GetParameters();
             var invocationArgs = new object?[handlerParameters.Length];
             for (int i = 0; i < invocationArgs.Length; ++i) {
