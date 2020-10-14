@@ -108,19 +108,15 @@ namespace Remus {
                 }
 
                 if (parameter.IsOptional) {
-                    var optionAttribute = parameter.GetCustomAttribute<OptionalArgumentAttribute>();
-                    if (optionAttribute == null) {
-                        arguments[i] = parameter.ParameterType.GetDefaultValue();
-                        continue;
+                    var optionName = parameter.GetCustomAttribute<OptionalArgumentAttribute>()?.Name ?? parameter.ParameterType.Name;
+                    var result = parameter.ParameterType.GetDefaultValue();
+                    var inputOptionValue = inputData.Options.GetValueOrDefault(optionName);
+                    if (!string.IsNullOrWhiteSpace(inputOptionValue)) {
+                        result = parser.Parse(inputOptionValue);
                     }
 
-                    var optionValue = inputData.Options.GetValueOrDefault(optionAttribute.Name);
-                    if (string.IsNullOrWhiteSpace(optionValue)) {
-                        arguments[i] = parameter.ParameterType.GetDefaultValue();
-                        continue;
-                    }
+                    arguments[i] = result;
 
-                    arguments[i] = parser.Parse(optionValue);
                 } else {
                     var flagAttribute = parameter.GetCustomAttribute<FlagAttribute>();
                     arguments[i] = flagAttribute != null ? true : parser.Parse(inputData.RequiredArguments[argumentIndex++]);
