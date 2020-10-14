@@ -7,15 +7,15 @@ namespace Remus.Exceptions {
     /// </summary>
     [PublicAPI]
     public class CommandException : Exception {
-        protected CommandException() {
+        public CommandException() {
             
         }
         
-        protected CommandException(string message, Exception innerException) : base(message, innerException) {
+        public CommandException(string message, Exception innerException) : base(message, innerException) {
             
         }
         
-        protected CommandException(string message) : base(message) {
+        public CommandException(string message) : base(message) {
             
         }
     }

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using Remus.Extensions;
 
-namespace Remus.Parsing {
+namespace Remus.TypeParsing {
     public static class Parsers {
         private static readonly IDictionary<Type, ITypeParser> TypeParsers = new Dictionary<Type, ITypeParser>();
 

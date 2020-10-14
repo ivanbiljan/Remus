@@ -1,4 +1,4 @@
-﻿namespace Remus.Parsing {
+﻿namespace Remus.TypeParsing {
     /// <summary>
     /// Describes a type parser.
     /// </summary>
