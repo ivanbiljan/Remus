@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Collections.ObjectModel;
 using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Linq;
@@ -8,6 +9,7 @@ using System.Reflection;
 using System.Text;
 using Remus.Attributes;
 using Remus.Exceptions;
+using Remus.Extensions;
 
 namespace Remus {
     /// <summary>
@@ -32,11 +34,6 @@ namespace Remus {
                 }
 
                 var parameters = method.GetParameters();
-                if (parameters.Length < 1 || parameters[0].ParameterType != typeof(ICommandSender)) {
-                    // Log
-                    throw new Exception("Command handler is missing a sender");
-                }
-
                 _commands.Add(commandAttribute.Name,
                     new Command(commandAttribute.Name, commandAttribute.Description, method,
                         method.IsStatic ? null : obj));
@@ -44,26 +41,17 @@ namespace Remus {
         }
         
         public void Evaluate(ICommandSender sender, string input) {
-            var command = default(Command);
-            var builder = new StringBuilder(input.Length);
-            var span = input.AsSpan();
-            while (true) {
-                var offset = span.IndexOf(' ');
-                builder.Append(offset > 0 ? span[..(offset + 1)] : span);
-                if (!_commands.TryGetValue(builder.ToString().Trim(), out var temp)) {
-                    break;
-                }
-                
-                command = temp;
-                span = span[(offset + 1)..];
+            var inputData = LexicalAnalyzer.Parse(input, _commands.Keys.ToList());
+            if (string.IsNullOrWhiteSpace(inputData.CommandName)) {
+                throw new InvalidCommandException(input);
             }
 
+            var command = _commands.GetValueOrDefault(inputData.CommandName);
             if (command is null) {
-                // Throw an exception
-                throw new Exception();
+                throw new InvalidCommandException(inputData.CommandName);
             }
 
-            command.Run(sender, span.ToString());
+            command.Run(sender, inputData);
         }
     }
 }

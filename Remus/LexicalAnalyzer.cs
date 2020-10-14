@@ -9,8 +9,11 @@ using System.Text;
 namespace Remus {
     /// <summary>
     /// Represents a command input analyzer. This class lexes an input string to extract meaningful information.
+    /// TODO: Figure out a better name for this
     /// </summary>
     internal sealed class LexicalAnalyzer {
+        // Generic command syntax: commandname [options/flags] requiredArg1 requiredArg2 "required arg 3"
+
         private LexicalAnalyzer() {
             // Don't expose the constructor
             // Callers should rely on the Parse() method
@@ -24,24 +27,24 @@ namespace Remus {
         /// <summary>
         /// Gets a read-only collection of required arguments.
         /// </summary>
-        public IReadOnlyCollection<string> RequiredArguments { get; private set; } = null!;
+        public IReadOnlyList<string> RequiredArguments { get; private set; } = null!;
 
         /// <summary>
         /// Gets a read-only collection of option-value pairs.
         /// </summary>
-        public IReadOnlyCollection<(string, string)> Options { get; private set; } = null!;
+        public IReadOnlyDictionary<string, string> Options { get; private set; } = null!;
 
         /// <summary>
         /// Gets a read-only collection of flags.
         /// </summary>
-        public IReadOnlyCollection<string> Flags { get; private set; } = null!;
+        public IReadOnlyList<string> Flags { get; private set; } = null!;
 
         /// <summary>
         /// Parses a given input string by trying to match it against a list of available command names.
         /// </summary>
         /// <param name="input">The input string.</param>
         /// <param name="availableCommandNames">A readonly collection of available command names.</param>
-        public static LexicalAnalyzer Parse(string input, IReadOnlyList<string> availableCommandNames) {
+        public static LexicalAnalyzer Parse(string input, IReadOnlyCollection<string> availableCommandNames) {
             if (string.IsNullOrWhiteSpace(input)) {
                 throw new ArgumentException(nameof(input));
             }
@@ -51,14 +54,16 @@ namespace Remus {
             var index = 0;
             var tokens = TokenizeInput(input);
             var commandName = ParseCommandName(availableCommandNames, tokens, ref index);
-            if (commandName == null) {
-                return new LexicalAnalyzer {
-                    CommandName = null,
-                    RequiredArguments = Array.Empty<string>(),
-                    Options = Array.Empty<(string, string)>(),
-                    Flags = Array.Empty<string>()
-                };
-            }
+            //if (commandName == null) {
+            //    return new LexicalAnalyzer {
+            //        CommandName = null,
+            //        RequiredArguments = Array.Empty<string>(),
+            //        Options = Array.Empty<(string, string)>(),
+            //        Flags = Array.Empty<string>()
+            //    };
+            //}
+
+            Debug.Assert(!string.IsNullOrWhiteSpace(commandName));
 
             var (options, flags) = ParseOptionals(tokens, ref index);
             var arguments = ParseArguments(tokens, ref index);
@@ -70,7 +75,7 @@ namespace Remus {
             };
         }
 
-        private static string? ParseCommandName(IReadOnlyList<string> availableCommandNames, IReadOnlyList<string> tokens, ref int index) {
+        private static string? ParseCommandName(IReadOnlyCollection<string> availableCommandNames, IReadOnlyList<string> tokens, ref int index) {
             Debug.Assert(tokens.Count > 0);
 
             var commandName = default(string?);
@@ -87,8 +92,8 @@ namespace Remus {
             return commandName;
         }
 
-        private static (List<(string, string)>, List<string>) ParseOptionals(IReadOnlyList<string> tokens, ref int index) {
-            var options = new List<(string, string)>();
+        private static (Dictionary<string, string>, List<string>) ParseOptionals(IReadOnlyList<string> tokens, ref int index) {
+            var options = new Dictionary<string, string>();
             var flags = new List<string>();
             for (; index < tokens.Count; ++index) {
                 var token = tokens[index];
@@ -102,10 +107,10 @@ namespace Remus {
                     var option = token[2..];
                     var indexOfEquals = option.IndexOf('=');
                     if (indexOfEquals > 0) {
-                        options.Add((option[..indexOfEquals], option[(indexOfEquals + 1)..]));
+                        options[option[..indexOfEquals]] = option[(indexOfEquals + 1)..];
                     } else {
                         // Missing options will be handled by the command service or whatever responsible for binding and invocation
-                        options.Add((option, tokens.ElementAtOrDefault(index + 1)));
+                        options[option[..indexOfEquals]] = tokens.ElementAtOrDefault(index + 1);
                     }
                 }
             }

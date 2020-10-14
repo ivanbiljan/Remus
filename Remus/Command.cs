@@ -6,8 +6,9 @@ using System.Reflection;
 using System.Text;
 using JetBrains.Annotations;
 using Remus.Attributes;
+using Remus.Exceptions;
 using Remus.Extensions;
-using Remus.Parsing;
+using Remus.TypeParsing;
 
 namespace Remus {
     /// <summary>
@@ -76,97 +77,59 @@ namespace Remus {
             _handlerObject = obj;
         }
 
-        internal void Run(ICommandSender sender, string input) {
-            // Generic command syntax: commandname [options/flags] requiredArg1 requiredArg2 "required arg 3"
-            
-            var handlerParameters = _handler.GetParameters();
-            var invocationArgs = new object?[handlerParameters.Length];
-            for (int i = 0; i < invocationArgs.Length; ++i) {
-                var parameter = handlerParameters[i];
-                if (parameter.GetCustomAttribute<OptionalArgumentAttribute>() == null &&
-                    parameter.GetCustomAttribute<FlagAttribute>() == null) {
-                    continue;
-                }
-
-                invocationArgs[i] = parameter.ParameterType.GetDefaultValue();
-            }
-            
-            var parsedArgs = ParseArguments(input);
-            var index = 0;
-            
-            HandleOptionals();
-            HandleArguments();
-
+        internal void Run(ICommandSender sender, LexicalAnalyzer inputData) {
+            //var parameters = _handler.GetParameters();
+            //var arguments = new object?[parameters.Length];
+            var arguments = BindParameters(sender, inputData);
             try {
-                _handler.Invoke(_handlerObject, invocationArgs);
-            }
-            catch (TargetInvocationException e) {
-                sender.SendMessage(e.Message);
-            }
-
-            void HandleOptionals() {
-                for (; index < parsedArgs.Count; ++index) {
-                    var arg = parsedArgs[index];
-                    if (!arg.StartsWith("-")) { // No options left to consume
-                        break;
-                    }
-
-                    if (arg.StartsWith("--")) {
-                        var split = arg.TrimStart('-').Split('=');
-                        var option = split[0];
-                        var optionIndex = _options.GetValueOrDefault(option, () => -1);
-                        if (optionIndex == -1) {
-                            continue;
-                        }
-
-                        var parameter = handlerParameters[optionIndex];
-                        var parser = Parsers.GetRule(parameter.ParameterType);
-                        if (parser == null) {
-                            throw new Exception($"Missing parser for type '{parameter.ParameterType}'");
-                        }
-                        
-                        if (split.Length > 1) {
-                            invocationArgs[optionIndex] = parser(split[1]);
-                        }
-                        else {
-                            if (index + 1 >= parsedArgs.Count) {
-                                throw new Exception("Missing value for option");
-                            }
-
-                            invocationArgs[optionIndex] = parser(parsedArgs[++index]);
-                        }
-                    }
-                    else {
-                        var flag = arg.Substring(1);
-                        var flagIndex = _flags.GetValueOrDefault(flag, () => -1);
-                        if (flagIndex == -1) {
-                            continue;
-                        }
-
-                        invocationArgs[flagIndex] = true;
-                    }
-                }
-            }
-
-            void HandleArguments() {
-                var parameterIndex = 0;
-                invocationArgs[parameterIndex++] = sender;
-                for (; index < parsedArgs.Count; ++index) {
-                    if (parameterIndex > handlerParameters.Length - _flags.Count - _options.Count) {
-                        throw new Exception("Invalid syntax");
-                    }
-                    
-                    var parameter = handlerParameters[parameterIndex];
-                    var parsingRule = Parsers.GetRule(parameter.ParameterType);
-                    if (parsingRule is null) {
-                        throw new Exception($"Missing parser for type '{parameter.ParameterType.Name}'");
-                    }
-
-                    invocationArgs[parameterIndex++] = parsingRule(parsedArgs[index]);
-                }
+                _handler.Invoke(_handlerObject, arguments);
+            } catch (TargetInvocationException ex) {
+                sender.SendMessage($"An unknown error has occured while executing the command: '{ex.Message}'");
             }
         }
-        
+
+        private object?[] BindParameters(ICommandSender sender, LexicalAnalyzer inputData) {
+            var parameters = _handler.GetParameters();
+            if (parameters.Length == 0) {
+                return Array.Empty<object>();
+            }
+
+            var argumentIndex = 0;
+            var arguments = new object?[parameters.Length];
+            for (var i = 0; i < parameters.Length; ++i) {
+                var parameter = parameters[i];
+                if (parameter.ParameterType == typeof(ICommandSender)) {
+                    arguments[i] = sender;
+                }
+
+                var parser = Parsers.GetTypeParser(parameter.ParameterType);
+                if (parser is null) {
+                    throw new MissingTypeParserException(parameter.ParameterType);
+                }
+
+                if (parameter.IsOptional) {
+                    var optionAttribute = parameter.GetCustomAttribute<OptionalArgumentAttribute>();
+                    if (optionAttribute == null) {
+                        arguments[i] = parameter.ParameterType.GetDefaultValue();
+                        continue;
+                    }
+
+                    var optionValue = inputData.Options.GetValueOrDefault(optionAttribute.Name);
+                    if (string.IsNullOrWhiteSpace(optionValue)) {
+                        arguments[i] = parameter.ParameterType.GetDefaultValue();
+                        continue;
+                    }
+
+                    arguments[i] = parser.Parse(optionValue);
+                } else {
+                    var flagAttribute = parameter.GetCustomAttribute<FlagAttribute>();
+                    arguments[i] = flagAttribute != null ? true : parser.Parse(inputData.RequiredArguments[argumentIndex++]);
+                }
+            }
+
+            return arguments;
+        }
+
         /// <inheritdoc />
         public override string ToString() {
             return Name;

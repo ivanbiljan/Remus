@@ -16,7 +16,9 @@ namespace Remus.TypeParsing {
             TypeParsers[typeof(T)] = parser;
         }
 
-        public static ITypeParser<T>? GetTypeParser<T>() => TypeParsers.GetValueOrDefault(typeof(T)) as ITypeParser<T>;
+        public static ITypeParser? GetTypeParser(Type type) => TypeParsers.GetValueOrDefault(type);
+
+        public static ITypeParser<T>? GetTypeParser<T>() => GetTypeParser(typeof(T)) as ITypeParser<T>;
 
         public static void RemoveParser<T>() => TypeParsers.Remove(typeof(T));
     }
