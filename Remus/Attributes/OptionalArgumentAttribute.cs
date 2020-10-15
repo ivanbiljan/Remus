@@ -14,11 +14,17 @@ namespace Remus.Attributes {
         public string Name { get; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="OptionalArgumentAttribute"/> with the specified <paramref name="name"/>.
+        /// Gets the description.
+        /// </summary>
+        public string Description { get; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OptionalArgumentAttribute"/> with the specified <paramref name="name"/> and <paramref name="description"/>.
         /// </summary>
         /// <param name="name">The name.</param>
-        public OptionalArgumentAttribute(string name) {
+        public OptionalArgumentAttribute(string name, string description) {
             Name = name;
+            Description = description;
         }
     }
 }

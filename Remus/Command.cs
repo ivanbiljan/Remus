@@ -16,8 +16,9 @@ namespace Remus {
     /// </summary>
     [PublicAPI]
     public sealed class Command {
-        private readonly IDictionary<string, int> _flags = new Dictionary<string, int>();
-        private readonly IDictionary<string, int> _options = new Dictionary<string, int>();
+        // This is only used so we don't have to loop through the handler's parameters each time HelpText is accessed
+        private readonly ISet<(string, string)> _options = new HashSet<(string, string)>();
+        private readonly ISet<(char, string)> _flags = new HashSet<(char, string)>();
         private readonly MethodInfo _handler;
         private readonly object? _handlerObject;
         
@@ -36,9 +37,29 @@ namespace Remus {
         /// </summary>
         public string? Syntax { get; }
 
-        [NotNull] [ItemNotNull] public IEnumerable<string> Options => _options.Keys;
+        // TODO: Reconsider this
+        /// <summary>
+        /// Gets the help text (à la a man page).
+        /// </summary>
+        public string HelpText {
+            get {
+                var helpTextBuilder = new StringBuilder("NAME\n")
+                    .AppendLine($"\t{Name}")
+                    .AppendLine("DESCRIPTION")
+                    .AppendLine($"\t{Description}")
+                    .AppendLine("OPTIONS\n");
+                foreach (var (option, description) in _options) {
+                    helpTextBuilder.AppendLine($"\t{option} - {description}");
+                }
 
-        [NotNull] [ItemNotNull] public IEnumerable<string> Flags => _flags.Keys;
+                helpTextBuilder.AppendLine("FLAGS\n");
+                foreach (var (flag, description) in _flags) {
+                    helpTextBuilder.AppendLine($"\t{flag} - {description}");
+                }
+
+                return helpTextBuilder.ToString();
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Command"/> class with the specified <paramref name="name"/>, <paramref name="description"/> and handler method.
@@ -48,38 +69,35 @@ namespace Remus {
         /// <param name="handler">The handler method.</param>
         /// <param name="obj">The handler object.</param>
         internal Command(string name, string description, MethodInfo handler, object? obj = null) {
-            Name = name;
-            Description = description;
-            _handler = handler;
-
+            var requiredParameters = new List<string>();
             var parameters = handler.GetParameters();
-            for (var i = 0; i < parameters.Length; i++) { // for loops are faster than foreach, especially on arrays
+            for (var i = 0; i < parameters.Length; ++i) { // for loops are faster than foreach, especially on arrays
                 var parameter = parameters[i];
-                var flagAttribute = parameter.GetCustomAttribute<FlagAttribute>();
-                if (!(flagAttribute is null) && parameter.ParameterType == typeof(bool)) {
-                    if (!string.IsNullOrWhiteSpace(flagAttribute.LongName)) {
-                        _flags[flagAttribute.LongName] = i;
-                    }
-                    if (!string.IsNullOrWhiteSpace(flagAttribute.ShortName)) {
-                        _flags[flagAttribute.ShortName] = i;
-                    }
-                } else if (parameter.IsOptional) {
-                    var optionName = parameter.GetCustomAttribute<OptionalArgumentAttribute>()?.Name ?? parameter.Name!;
-                    _options[optionName] = i;
+                if (parameter.IsOptional) {
+                    var optionalArgumentAttribute = parameter.GetCustomAttribute<OptionalArgumentAttribute>();
+                    _options.Add((optionalArgumentAttribute?.Name ?? parameter.Name!, optionalArgumentAttribute?.Description ?? "N/A"));
+                    continue;
                 }
-                else {
-                    if (_flags.Count > 0 || _options.Count > 0) {
-                        throw new Exception("Optional parameters must not precede required parameters");
+
+                if (parameter.ParameterType == typeof(bool)) {
+                    var flagAttribute = parameter.GetCustomAttribute<FlagAttribute>();
+                    if (flagAttribute != null) {
+                        _flags.Add((flagAttribute.Identifier, flagAttribute.Description));
+                        continue;
                     }
                 }
+
+                requiredParameters.Add(parameter.Name!);
             }
 
+            Name = name;
+            Description = description;
+            Syntax = $"{Name} [options/flags] {string.Join(" ", requiredParameters.Select(p => $"<{p}>"))}";
+            _handler = handler;
             _handlerObject = obj;
         }
 
         internal void Run(ICommandSender sender, LexicalAnalyzer inputData) {
-            //var parameters = _handler.GetParameters();
-            //var arguments = new object?[parameters.Length];
             var arguments = BindParameters(sender, inputData);
             try {
                 _handler.Invoke(_handlerObject, arguments);
