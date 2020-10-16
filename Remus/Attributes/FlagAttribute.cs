@@ -9,18 +9,23 @@ namespace Remus.Attributes {
     [PublicAPI]
     public sealed class FlagAttribute : Attribute {
         /// <summary>
-        /// Gets the long identifier.
+        /// Initializes a new instance of the <see cref="FlagAttribute"/> class with the specified identifier and description.
         /// </summary>
-        public string? LongName { get; }
-        
-        /// <summary>
-        /// Gets the short identifier.
-        /// </summary>
-        public string? ShortName { get; }
-
-        public FlagAttribute(string? longName = null, string? shortName = null) {
-            LongName = longName;
-            ShortName = shortName;
+        /// <param name="identifier">The identifier.</param>
+        /// <param name="description">The description.</param>
+        public FlagAttribute(char identifier, string description) {
+            Identifier = identifier;
+            Description = description;
         }
+
+        /// <summary>
+        /// Gets letter that identifies the flag.
+        /// </summary>
+        public char Identifier { get; }
+
+        /// <summary>
+        /// Gets the description.
+        /// </summary>
+        public string Description { get; }
     }
 }

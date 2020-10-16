@@ -6,8 +6,9 @@ using System.Reflection;
 using System.Text;
 using JetBrains.Annotations;
 using Remus.Attributes;
+using Remus.Exceptions;
 using Remus.Extensions;
-using Remus.Parsing;
+using Remus.TypeParsing;
 
 namespace Remus {
     /// <summary>
@@ -15,8 +16,9 @@ namespace Remus {
     /// </summary>
     [PublicAPI]
     public sealed class Command {
-        private readonly IDictionary<string, int> _flags = new Dictionary<string, int>();
-        private readonly IDictionary<string, int> _options = new Dictionary<string, int>();
+        // This is only used so we don't have to loop through the handler's parameters each time HelpText is accessed
+        private readonly ISet<(string, string)> _options = new HashSet<(string, string)>();
+        private readonly ISet<(char, string)> _flags = new HashSet<(char, string)>();
         private readonly MethodInfo _handler;
         private readonly object? _handlerObject;
         
@@ -35,9 +37,29 @@ namespace Remus {
         /// </summary>
         public string? Syntax { get; }
 
-        [NotNull] [ItemNotNull] public IEnumerable<string> Options => _options.Keys;
+        // TODO: Reconsider this
+        /// <summary>
+        /// Gets the help text (à la a man page).
+        /// </summary>
+        public string HelpText {
+            get {
+                var helpTextBuilder = new StringBuilder("NAME\n")
+                    .AppendLine($"\t{Name}")
+                    .AppendLine("DESCRIPTION")
+                    .AppendLine($"\t{Description}")
+                    .AppendLine("OPTIONS\n");
+                foreach (var (option, description) in _options) {
+                    helpTextBuilder.AppendLine($"\t{option} - {description}");
+                }
 
-        [NotNull] [ItemNotNull] public IEnumerable<string> Flags => _flags.Keys;
+                helpTextBuilder.AppendLine("FLAGS\n");
+                foreach (var (flag, description) in _flags) {
+                    helpTextBuilder.AppendLine($"\t{flag} - {description}");
+                }
+
+                return helpTextBuilder.ToString();
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Command"/> class with the specified <paramref name="name"/>, <paramref name="description"/> and handler method.
@@ -47,211 +69,89 @@ namespace Remus {
         /// <param name="handler">The handler method.</param>
         /// <param name="obj">The handler object.</param>
         internal Command(string name, string description, MethodInfo handler, object? obj = null) {
-            Name = name;
-            Description = description;
-            _handler = handler;
-
+            var requiredParameters = new List<string>();
             var parameters = handler.GetParameters();
-            for (var i = 0; i < parameters.Length; i++) {
+            for (var i = 0; i < parameters.Length; ++i) { // for loops are faster than foreach, especially on arrays
                 var parameter = parameters[i];
-                var flagAttribute = parameter.GetCustomAttribute<FlagAttribute>();
-                var optionAttribute = parameter.GetCustomAttribute<OptionalArgumentAttribute>();
-                if (!(flagAttribute is null) && parameter.ParameterType == typeof(bool)) {
-                    if (!string.IsNullOrWhiteSpace(flagAttribute.LongName)) {
-                        _flags[flagAttribute.LongName] = i;
-                    }
-                    if (!string.IsNullOrWhiteSpace(flagAttribute.ShortName)) {
-                        _flags[flagAttribute.ShortName] = i;
-                    }
-                } else if (!(optionAttribute is null)) {
-                    _options[optionAttribute.Name] = i;
-                }
-                else {
-                    if (_flags.Count > 0 || _options.Count > 0) {
-                        throw new Exception("Optional parameters must not precede required parameters");
-                    }
-                }
-            }
-
-            _handlerObject = obj;
-        }
-
-        internal void Run(ICommandSender sender, string input) {
-            // Generic command syntax: commandname [options/flags] requiredArg1 requiredArg2 "required arg 3"
-            var handlerParameters = _handler.GetParameters();
-            var invocationArgs = new object?[handlerParameters.Length];
-            for (int i = 0; i < invocationArgs.Length; ++i) {
-                var parameter = handlerParameters[i];
-                if (parameter.GetCustomAttribute<OptionalArgumentAttribute>() == null &&
-                    parameter.GetCustomAttribute<FlagAttribute>() == null) {
+                if (parameter.ParameterType == typeof(ICommandSender)) {
                     continue;
                 }
 
-                invocationArgs[i] = parameter.ParameterType.GetDefaultValue();
-            }
-            
-            var parsedArgs = ParseArguments(input);
-            var index = 0;
-            
-            HandleOptionals();
-            HandleArguments();
+                if (parameter.IsOptional) {
+                    var optionalArgumentAttribute = parameter.GetCustomAttribute<OptionalArgumentAttribute>();
+                    _options.Add((optionalArgumentAttribute?.Name ?? parameter.Name!, optionalArgumentAttribute?.Description ?? "N/A"));
+                    continue;
+                }
 
+                if (parameter.ParameterType == typeof(bool)) {
+                    var flagAttribute = parameter.GetCustomAttribute<FlagAttribute>();
+                    if (flagAttribute != null) {
+                        _flags.Add((flagAttribute.Identifier, flagAttribute.Description));
+                        continue;
+                    }
+                }
+
+                requiredParameters.Add(parameter.Name!);
+            }
+
+            Name = name;
+            Description = description;
+            Syntax = $"{Name} [options/flags] {string.Join(" ", requiredParameters.Select(p => $"<{p}>"))}";
+            _handler = handler;
+            _handlerObject = obj;
+        }
+
+        internal void Run(ICommandSender sender, LexicalAnalyzer inputData) {
+            var arguments = BindParameters(sender, inputData);
             try {
-                _handler.Invoke(_handlerObject, invocationArgs);
-            }
-            catch (TargetInvocationException e) {
-                sender.SendMessage(e.Message);
-            }
-
-            void HandleOptionals() {
-                for (; index < parsedArgs.Count; ++index) {
-                    var arg = parsedArgs[index];
-                    if (!arg.StartsWith("-")) { // No options left to consume
-                        break;
-                    }
-
-                    if (arg.StartsWith("--")) {
-                        var split = arg.TrimStart('-').Split('=');
-                        var option = split[0];
-                        var optionIndex = _options.GetValueOrDefault(option, () => -1);
-                        if (optionIndex == -1) {
-                            continue;
-                        }
-
-                        var parameter = handlerParameters[optionIndex];
-                        var parser = Parsers.GetRule(parameter.ParameterType);
-                        if (parser == null) {
-                            throw new Exception($"Missing parser for type '{parameter.ParameterType}'");
-                        }
-                        
-                        if (split.Length > 1) {
-                            invocationArgs[optionIndex] = parser(split[1]);
-                        }
-                        else {
-                            if (index + 1 >= parsedArgs.Count) {
-                                throw new Exception("Missing value for option");
-                            }
-
-                            invocationArgs[optionIndex] = parser(parsedArgs[++index]);
-                        }
-                    }
-                    else {
-                        var flag = arg.Substring(1);
-                        var flagIndex = _flags.GetValueOrDefault(flag, () => -1);
-                        if (flagIndex == -1) {
-                            continue;
-                        }
-
-                        invocationArgs[flagIndex] = true;
-                    }
-                }
-            }
-
-            void HandleArguments() {
-                var parameterIndex = 0;
-                invocationArgs[parameterIndex++] = sender;
-                for (; index < parsedArgs.Count; ++index) {
-                    if (parameterIndex > handlerParameters.Length - _flags.Count - _options.Count) {
-                        throw new Exception("Invalid syntax");
-                    }
-                    
-                    var parameter = handlerParameters[parameterIndex];
-                    var parsingRule = Parsers.GetRule(parameter.ParameterType);
-                    if (parsingRule is null) {
-                        throw new Exception($"Missing parser for type '{parameter.ParameterType.Name}'");
-                    }
-
-                    invocationArgs[parameterIndex++] = parsingRule(parsedArgs[index]);
-                }
+                _handler.Invoke(_handlerObject, arguments);
+            } catch (TargetInvocationException ex) {
+                sender.SendMessage($"An unknown error has occured while executing the command: '{ex.Message}'");
             }
         }
-        
+
+        private object?[] BindParameters(ICommandSender sender, LexicalAnalyzer inputData) {
+            var parameters = _handler.GetParameters();
+            if (parameters.Length == 0) {
+                return Array.Empty<object>();
+            }
+
+            var argumentIndex = 0;
+            var arguments = new object?[parameters.Length];
+            for (var i = 0; i < parameters.Length; ++i) {
+                var parameter = parameters[i];
+                if (parameter.ParameterType == typeof(ICommandSender)) {
+                    arguments[i] = sender;
+                    continue;
+                }
+
+                var parser = Parsers.GetTypeParser(parameter.ParameterType);
+                if (parser is null) {
+                    throw new MissingTypeParserException(parameter.ParameterType);
+                }
+
+                if (parameter.IsOptional) {
+                    var optionName = parameter.GetCustomAttribute<OptionalArgumentAttribute>()?.Name ?? parameter.ParameterType.Name;
+                    var result = parameter.ParameterType.GetDefaultValue();
+                    var inputOptionValue = inputData.Options.GetValueOrDefault(optionName);
+                    if (!string.IsNullOrWhiteSpace(inputOptionValue)) {
+                        result = parser.Parse(inputOptionValue);
+                    }
+
+                    arguments[i] = result;
+
+                } else {
+                    var flagAttribute = parameter.GetCustomAttribute<FlagAttribute>();
+                    arguments[i] = flagAttribute != null ? true : parser.Parse(inputData.RequiredArguments[argumentIndex++]);
+                }
+            }
+
+            return arguments;
+        }
+
         /// <inheritdoc />
         public override string ToString() {
             return Name;
-        }
-        
-        /// <summary>
-        ///     Parses arguments from the specified input string. Supports quotation marks and escape characters.
-        /// </summary>
-        /// <param name="input">The input string.</param>
-        /// <returns>The parameters.</returns>
-        private static List<string> ParseArguments(string input)
-        {
-            var parameters = new List<string>();
-            var stringBuilder = new StringBuilder(input.Length);
-            var inQuotes = false;
-            var isEscaped = false;
-            foreach (var currentCharacter in input)
-            {
-                switch (currentCharacter)
-                {
-                    case '\\':
-                        if (isEscaped) {
-                            stringBuilder.Append(currentCharacter);
-                            isEscaped = false;
-                            continue;
-                        }
-
-                        isEscaped = true;
-                        break;
-                    case ' ':
-                    case '\t':
-                    case '\n':
-                    {
-                        if (inQuotes || isEscaped)
-                        {
-                            stringBuilder.Append(currentCharacter);
-                            isEscaped = false;
-                        }
-                        else
-                        {
-                            if (stringBuilder.Length == 0)
-                            {
-                                continue;
-                            }
-                            
-                            CommitPendingArgument();
-                        }
-
-                        break;
-                    }
-
-                    case '"':
-                    {
-                        if (isEscaped) {
-                            stringBuilder.Append(currentCharacter);
-                            isEscaped = true;
-                            continue;
-                        }
-                        
-                        inQuotes = !inQuotes;
-                        if (inQuotes)
-                        {
-                            continue;
-                        }
-                        
-                        CommitPendingArgument();
-                        break;
-                    }
-
-                    default:
-                        stringBuilder.Append(currentCharacter);
-                        break;
-                }
-            }
-            
-            CommitPendingArgument();
-            return parameters;
-
-            void CommitPendingArgument() {
-                if (stringBuilder.Length == 0) {
-                    return;
-                }
-                
-                parameters.Add(stringBuilder.ToString());
-                stringBuilder.Clear();
-            }
         }
     }
 }
