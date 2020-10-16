@@ -73,6 +73,10 @@ namespace Remus {
             var parameters = handler.GetParameters();
             for (var i = 0; i < parameters.Length; ++i) { // for loops are faster than foreach, especially on arrays
                 var parameter = parameters[i];
+                if (parameter.ParameterType == typeof(ICommandSender)) {
+                    continue;
+                }
+
                 if (parameter.IsOptional) {
                     var optionalArgumentAttribute = parameter.GetCustomAttribute<OptionalArgumentAttribute>();
                     _options.Add((optionalArgumentAttribute?.Name ?? parameter.Name!, optionalArgumentAttribute?.Description ?? "N/A"));
@@ -118,6 +122,7 @@ namespace Remus {
                 var parameter = parameters[i];
                 if (parameter.ParameterType == typeof(ICommandSender)) {
                     arguments[i] = sender;
+                    continue;
                 }
 
                 var parser = Parsers.GetTypeParser(parameter.ParameterType);

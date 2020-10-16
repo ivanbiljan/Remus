@@ -33,7 +33,6 @@ namespace Remus {
                     continue;
                 }
 
-                var parameters = method.GetParameters();
                 _commands.Add(commandAttribute.Name,
                     new Command(commandAttribute.Name, commandAttribute.Description, method,
                         method.IsStatic ? null : obj));

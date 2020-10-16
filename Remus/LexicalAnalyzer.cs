@@ -80,13 +80,15 @@ namespace Remus {
 
             var commandName = default(string?);
             var builder = new StringBuilder(tokens[0]);
-            for (index = 0; index < tokens.Count; ++index) {
-                var temp = builder.Append(" " + tokens[index]).ToString();
-                if (!availableCommandNames.Contains(temp)) {
+            for (var i = 1; i < tokens.Count; ++i) {
+                var tempCommand = builder.ToString();
+                if (!availableCommandNames.Contains(tempCommand)) {
                     break;
                 }
 
-                commandName = temp;
+                commandName = tempCommand;
+                index = i;
+                builder.Append(" " + tokens[i]);
             }
 
             return commandName;
@@ -95,7 +97,7 @@ namespace Remus {
         private static (Dictionary<string, string>, List<string>) ParseOptionals(IReadOnlyList<string> tokens, ref int index) {
             var options = new Dictionary<string, string>();
             var flags = new List<string>();
-            for (; index < tokens.Count; ++index) {
+            for (var i = index; i < tokens.Count; ++i) {
                 var token = tokens[index];
                 if (!token.StartsWith("-")) { // No options left to consume
                     continue;
@@ -113,6 +115,8 @@ namespace Remus {
                         options[option[..indexOfEquals]] = tokens.ElementAtOrDefault(index + 1);
                     }
                 }
+
+                ++index;
             }
 
             return (options, flags);
