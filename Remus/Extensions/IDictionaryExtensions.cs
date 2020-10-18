@@ -7,10 +7,16 @@ namespace Remus.Extensions {
     /// Provides extension methods for the <see cref="IDictionary{TKey,TValue}"/> type.
     /// </summary>
     public static class IDictionaryExtensions {
-        public static TValue GetValueOrDefault<TKey, TValue>([NotNull] this IDictionary<TKey, TValue> dictionary, TKey key,
-            Func<TValue>? defaultValueGenerator = null) where TKey : notnull {
-            defaultValueGenerator ??= () => default!;
-            return dictionary.TryGetValue(key, out var value) ? value : defaultValueGenerator();
+        public static TValue GetValueOrDefault<TKey, TValue>([NotNull] this IDictionary<TKey, TValue> dictionary, TKey key, TValue defaultValue = default) where TKey : notnull {
+            if (dictionary is null) {
+                throw new ArgumentNullException(nameof(dictionary));
+            }
+
+            if (key is null) {
+                throw new ArgumentNullException(nameof(key));
+            }
+
+            return dictionary.TryGetValue(key, out var value) ? value : defaultValue;
         }
     }
 }

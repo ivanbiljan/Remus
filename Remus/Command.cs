@@ -61,6 +61,7 @@ namespace Remus {
 
                 return helpTextBuilder.ToString();
             }
+            set { }
         }
 
         /// <summary>
