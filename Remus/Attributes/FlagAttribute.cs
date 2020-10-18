@@ -14,6 +14,10 @@ namespace Remus.Attributes {
         /// <param name="identifier">The identifier.</param>
         /// <param name="description">The description.</param>
         public FlagAttribute(char identifier, string description) {
+            if (!char.IsLetter(identifier)) {
+                throw new ArgumentException(nameof(identifier));
+            }
+
             Identifier = identifier;
             Description = description;
         }

@@ -26,6 +26,10 @@ namespace Remus.Attributes {
         /// <param name="name">The name.</param>
         /// <param name="description">The description.</param>
         public CommandAttribute(string name, string description) {
+            if (string.IsNullOrWhiteSpace(name)) {
+                throw new ArgumentException(nameof(name));
+            }
+
             Name = name;
             Description = description;
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -41,6 +42,7 @@ namespace Remus {
         /// <summary>
         /// Gets the help text (à la a man page).
         /// </summary>
+        [ExcludeFromCodeCoverage]
         public string HelpText {
             get {
                 var helpTextBuilder = new StringBuilder("NAME\n")
