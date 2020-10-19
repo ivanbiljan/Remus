@@ -54,17 +54,6 @@ namespace Remus {
             var index = 0;
             var tokens = TokenizeInput(input);
             var commandName = ParseCommandName(availableCommandNames, tokens, ref index);
-            //if (commandName == null) {
-            //    return new LexicalAnalyzer {
-            //        CommandName = null,
-            //        RequiredArguments = Array.Empty<string>(),
-            //        Options = Array.Empty<(string, string)>(),
-            //        Flags = Array.Empty<string>()
-            //    };
-            //}
-
-            Debug.Assert(!string.IsNullOrWhiteSpace(commandName));
-
             var (options, flags) = ParseOptionals(tokens, ref index);
             var arguments = ParseArguments(tokens, ref index);
             return new LexicalAnalyzer {
@@ -112,7 +101,8 @@ namespace Remus {
                         options[option[..indexOfEquals]] = option[(indexOfEquals + 1)..];
                     } else {
                         // Missing options will be handled by the command service or whatever responsible for binding and invocation
-                        options[option[..indexOfEquals]] = tokens.ElementAtOrDefault(index + 1);
+                        options[option] = tokens.ElementAtOrDefault(i + 1);
+                        ++index;
                     }
                 }
 
@@ -173,7 +163,7 @@ namespace Remus {
                     case '"': {
                             if (isEscaped) {
                                 stringBuilder.Append(currentCharacter);
-                                isEscaped = true;
+                                isEscaped = false;
                                 continue;
                             }
 
