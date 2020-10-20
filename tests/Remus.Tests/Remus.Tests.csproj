@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Remus\Remus.csproj" />
+    <ProjectReference Include="..\..\src\Remus\Remus.csproj" />
   </ItemGroup>
 
 </Project>
