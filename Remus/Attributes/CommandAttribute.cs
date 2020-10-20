@@ -21,6 +21,11 @@ namespace Remus.Attributes {
         public string Description { get; }
 
         /// <summary>
+        /// Gets or sets the help text.
+        /// </summary>
+        public string? HelpText { get; set; }
+
+        /// <summary>
         /// Gets or sets the syntax.
         /// </summary>
         public string? Syntax { get; set; }

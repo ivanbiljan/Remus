@@ -6,24 +6,6 @@ using Remus.Extensions;
 
 namespace Remus.TypeParsing {
     public sealed class Parsers {
-        //private static readonly IDictionary<Type, ITypeParser?> TypeParsers = new Dictionary<Type, ITypeParser?> {
-        //    [typeof(string)] = new StringParser()
-        //};
-
-        //public static void AddParser<T>(ITypeParser<T> parser, bool overrideExisting = false) {
-        //    if (TypeParsers.ContainsKey(typeof(T)) && !overrideExisting) {
-        //        return;
-        //    }
-
-        //    TypeParsers[typeof(T)] = parser;
-        //}
-
-        //public static ITypeParser? GetTypeParser(Type type) => TypeParsers.GetValueOrDefault(type);
-
-        //public static ITypeParser<T>? GetTypeParser<T>() => GetTypeParser(typeof(T)) as ITypeParser<T>;
-
-        //public static void RemoveParser<T>() => TypeParsers.Remove(typeof(T));
-
         private static readonly IDictionary<Type, ITypeParser> PrimitiveParsers = new Dictionary<Type, ITypeParser> {
             [typeof(bool)] = new BooleanParser(),
             [typeof(byte)] = new ByteParser(),
@@ -57,12 +39,19 @@ namespace Remus.TypeParsing {
         /// </summary>
         /// <typeparam name="T">The type.</typeparam>
         /// <returns>The parser, or <see langword="null"/> if no parser is defined for the given type.</returns>
-        public ITypeParser<T>? GetParser<T>() {
-            if (typeof(T).IsPrimitive) {
-                return PrimitiveParsers[typeof(T)] as ITypeParser<T>;
+        public ITypeParser<T>? GetParser<T>() => GetParser(typeof(T)) as ITypeParser<T>;
+
+        /// <summary>
+        /// Gets a parser for the specified type.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns>The parser, or <see langword="null"/> if no parser is defined for the given type.</returns>
+        public ITypeParser? GetParser(Type type) {
+            if (type.IsPrimitive) {
+                return PrimitiveParsers[type];
             }
 
-            return _parsers.GetValueOrDefault(typeof(T)) as ITypeParser<T>;
+            return _parsers.GetValueOrDefault(type);
         }
     }
 }
