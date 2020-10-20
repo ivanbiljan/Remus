@@ -21,6 +21,16 @@ namespace Remus.Attributes {
         public string Description { get; }
 
         /// <summary>
+        /// Gets or sets the help text.
+        /// </summary>
+        public string? HelpText { get; set; }
+
+        /// <summary>
+        /// Gets or sets the syntax.
+        /// </summary>
+        public string? Syntax { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="CommandAttribute"/> class with the specified <paramref name="name"/> and <paramref name="description"/>.
         /// </summary>
         /// <param name="name">The name.</param>
@@ -28,6 +38,10 @@ namespace Remus.Attributes {
         public CommandAttribute(string name, string description) {
             if (string.IsNullOrWhiteSpace(name)) {
                 throw new ArgumentException(nameof(name));
+            }
+
+            if (description is null) {
+                throw new ArgumentNullException(nameof(description));
             }
 
             Name = name;

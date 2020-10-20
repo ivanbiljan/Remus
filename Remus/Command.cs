@@ -20,8 +20,11 @@ namespace Remus {
         // This is only used so we don't have to loop through the handler's parameters each time HelpText is accessed
         private readonly ISet<(string, string)> _options = new HashSet<(string, string)>();
         private readonly ISet<(char, string)> _flags = new HashSet<(char, string)>();
+
+        private readonly CommandManager _commandManager;
         private readonly MethodInfo _handler;
         private readonly object? _handlerObject;
+        private string? _helpText;
         
         /// <summary>
         /// Gets the name.
@@ -36,7 +39,7 @@ namespace Remus {
         /// <summary>
         /// Gets the syntax.
         /// </summary>
-        public string? Syntax { get; }
+        public string? Syntax { get; set; }
 
         // TODO: Reconsider this
         /// <summary>
@@ -45,6 +48,10 @@ namespace Remus {
         [ExcludeFromCodeCoverage]
         public string HelpText {
             get {
+                if (_helpText != null) {
+                    return _helpText;
+                }
+
                 var helpTextBuilder = new StringBuilder("NAME\n")
                     .AppendLine($"\t{Name}")
                     .AppendLine("DESCRIPTION")
@@ -61,17 +68,30 @@ namespace Remus {
 
                 return helpTextBuilder.ToString();
             }
-            set { }
+            set => _helpText = value;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Command"/> class with the specified <paramref name="name"/>, <paramref name="description"/> and handler method.
+        /// Initializes a new instance of the <see cref="Command"/> class with the specified command manager, name, description and handler.
         /// </summary>
+        /// <param name="commandManager">The <see cref="CommandManager"/> associated with this command.</param>
         /// <param name="name">The name.</param>
         /// <param name="description">The description.</param>
         /// <param name="handler">The handler method.</param>
         /// <param name="obj">The handler object.</param>
-        internal Command(string name, string description, MethodInfo handler, object? obj = null) {
+        internal Command(CommandManager commandManager, string name, string description, MethodInfo handler, object? obj = null) {
+            if (commandManager is null) {
+                throw new ArgumentNullException(nameof(commandManager));
+            }
+
+            if (name is null) {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            if (handler is null) {
+                throw new ArgumentNullException(nameof(handler));
+            }
+
             var requiredParameters = new List<string>();
             var parameters = handler.GetParameters();
             for (var i = 0; i < parameters.Length; ++i) { // for loops are faster than foreach, especially on arrays
@@ -97,11 +117,12 @@ namespace Remus {
                 requiredParameters.Add(parameter.Name!);
             }
 
-            Name = name;
-            Description = description;
-            Syntax = $"{Name} [options/flags] {string.Join(" ", requiredParameters.Select(p => $"<{p}>"))}";
+            _commandManager = commandManager;
             _handler = handler;
             _handlerObject = obj;
+
+            Name = name;
+            Description = description;
         }
 
         internal void Run(ICommandSender sender, LexicalAnalyzer inputData) {
@@ -145,7 +166,13 @@ namespace Remus {
 
                 } else {
                     var flagAttribute = parameter.GetCustomAttribute<FlagAttribute>();
-                    arguments[i] = flagAttribute != null ? true : parser.Parse(inputData.RequiredArguments[argumentIndex++]);
+                    if (flagAttribute != null) {
+                        if (parameter.ParameterType == typeof(bool) && inputData.Flags.Contains(flagAttribute.Identifier)) {
+                            arguments[i] = true;
+                        }
+                    } else {
+                        arguments[i] = parser.Parse(inputData.RequiredArguments[argumentIndex++]);
+                    }
                 }
             }
 
