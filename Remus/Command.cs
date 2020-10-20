@@ -149,7 +149,7 @@ namespace Remus {
                     continue;
                 }
 
-                var parser = Parsers.GetTypeParser(parameter.ParameterType);
+                var parser = _commandManager.Parsers.GetParser(parameter.ParameterType);
                 if (parser is null) {
                     throw new MissingTypeParserException(parameter.ParameterType);
                 }
