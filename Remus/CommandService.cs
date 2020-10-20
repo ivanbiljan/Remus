@@ -16,6 +16,7 @@ namespace Remus {
     /// Represents a command service.
     /// </summary>
     public sealed class CommandService {
+        private const BindingFlags HandlerBindingFlags = BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance;
         private readonly IDictionary<string, Command?> _commands = new Dictionary<string, Command?>();
 
         /// <summary>
@@ -28,8 +29,11 @@ namespace Remus {
         /// </summary>
         /// <param name="obj">The object.</param>
         public void Register(object obj) {
-            var methods = obj.GetType()
-                .GetMethods(BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance);
+            if (obj is null) {
+                throw new ArgumentNullException(nameof(obj));
+            }
+
+            var methods = obj.GetType().GetMethods(HandlerBindingFlags);
             foreach (var method in methods) {
                 var commandAttribute = method.GetCustomAttribute<CommandAttribute>();
                 if (commandAttribute is null) {
@@ -39,6 +43,27 @@ namespace Remus {
                 _commands.Add(commandAttribute.Name,
                     new Command(commandAttribute.Name, commandAttribute.Description, method,
                         method.IsStatic ? null : obj));
+            }
+        }
+
+        /// <summary>
+        /// Deregisters commands described by the specified object.
+        /// </summary>
+        /// <param name="obj">The object.</param>
+        public void Deregister(object obj) {
+            if (obj is null) {
+                throw new ArgumentNullException(nameof(obj));
+            }
+
+            var methods = obj.GetType().GetMethods(HandlerBindingFlags);
+            for (var i = 0; i < methods.Length; ++i) {
+                var method = methods[i];
+                var commandAttribute = method.GetCustomAttribute<CommandAttribute>();
+                if (commandAttribute is null) {
+                    continue;
+                }
+
+                _commands.Remove(commandAttribute.Name);
             }
         }
         
