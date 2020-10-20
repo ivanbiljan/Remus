@@ -6,10 +6,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="xUnit" Version="2.4.1" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\Remus\Remus.csproj" />
     </ItemGroup>
 

@@ -61,7 +61,6 @@ namespace Remus {
 
                 return helpTextBuilder.ToString();
             }
-            set { }
         }
 
         /// <summary>
@@ -72,6 +71,14 @@ namespace Remus {
         /// <param name="handler">The handler method.</param>
         /// <param name="obj">The handler object.</param>
         internal Command(string name, string description, MethodInfo handler, object? obj = null) {
+            if (name is null) {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            if (handler is null) {
+                throw new ArgumentNullException(nameof(handler));
+            }
+
             var requiredParameters = new List<string>();
             var parameters = handler.GetParameters();
             for (var i = 0; i < parameters.Length; ++i) { // for loops are faster than foreach, especially on arrays
@@ -145,7 +152,13 @@ namespace Remus {
 
                 } else {
                     var flagAttribute = parameter.GetCustomAttribute<FlagAttribute>();
-                    arguments[i] = flagAttribute != null ? true : parser.Parse(inputData.RequiredArguments[argumentIndex++]);
+                    if (flagAttribute != null) {
+                        if (parameter.ParameterType == typeof(bool) && inputData.Flags.Contains(flagAttribute.Identifier)) {
+                            arguments[i] = true;
+                        }
+                    } else {
+                        arguments[i] = parser.Parse(inputData.RequiredArguments[argumentIndex++]);
+                    }
                 }
             }
 

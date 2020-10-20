@@ -16,9 +16,12 @@ namespace Remus {
     /// Represents a command service.
     /// </summary>
     public sealed class CommandService {
-        private readonly IDictionary<string, Command> _commands = new Dictionary<string, Command>();
+        private readonly IDictionary<string, Command?> _commands = new Dictionary<string, Command?>();
 
-        public ImmutableArray<Command> Commands => _commands.Values.ToImmutableArray();
+        /// <summary>
+        /// Gets an immutable array of all commands.
+        /// </summary>
+        public ImmutableArray<Command?> Commands => _commands.Values.ToImmutableArray();
 
         /// <summary>
         /// Registers commands described by the specified object.
@@ -39,7 +42,20 @@ namespace Remus {
             }
         }
         
+        /// <summary>
+        /// Evaluates a specified input string using the given command sender.
+        /// </summary>
+        /// <param name="sender">The sender, which must not be <see langword="null"/>.</param>
+        /// <param name="input">The input string, which must not be <see langword="null"/>.</param>
         public void Evaluate(ICommandSender sender, string input) {
+            if (sender is null) {
+                throw new ArgumentNullException(nameof(sender));
+            }
+
+            if (input is null) {
+                throw new ArgumentNullException(nameof(input));
+            }
+
             var inputData = LexicalAnalyzer.Parse(input, _commands.Keys.ToList());
             if (string.IsNullOrWhiteSpace(inputData.CommandName)) {
                 throw new InvalidCommandException(input);

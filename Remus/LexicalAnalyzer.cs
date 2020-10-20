@@ -37,7 +37,7 @@ namespace Remus {
         /// <summary>
         /// Gets a read-only collection of flags.
         /// </summary>
-        public IReadOnlyList<string> Flags { get; private set; } = null!;
+        public IReadOnlyList<char> Flags { get; private set; } = null!;
 
         /// <summary>
         /// Parses a given input string by trying to match it against a list of available command names.
@@ -83,9 +83,9 @@ namespace Remus {
             return commandName;
         }
 
-        private static (Dictionary<string, string>, List<string>) ParseOptionals(IReadOnlyList<string> tokens, ref int index) {
+        private static (Dictionary<string, string>, List<char>) ParseOptionals(IReadOnlyList<string> tokens, ref int index) {
             var options = new Dictionary<string, string>();
-            var flags = new List<string>();
+            var flags = new List<char>();
             for (var i = index; i < tokens.Count; ++i) {
                 var token = tokens[index];
                 if (!token.StartsWith("-")) { // No options left to consume
@@ -93,7 +93,7 @@ namespace Remus {
                 }
 
                 if (!token.StartsWith("--")) {
-                    flags.Add(token[1..]);
+                    flags.Add(token[1]);
                 } else {
                     var option = token[2..];
                     var indexOfEquals = option.IndexOf('=');

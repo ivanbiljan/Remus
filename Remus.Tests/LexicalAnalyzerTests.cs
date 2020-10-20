@@ -21,7 +21,7 @@ namespace Remus.Tests {
             var parsedData = LexicalAnalyzer.Parse(inputString, new string[] { "tar" });
 
             Assert.Equal("tar", parsedData.CommandName);
-            Assert.Equal(new string[] { "x", "v" }, parsedData.Flags);
+            Assert.Equal(new char[] { 'x', 'v' }, parsedData.Flags);
             Assert.Equal(optionals, parsedData.Options);
             Assert.Equal(new string[] { "Required argument" }, parsedData.RequiredArguments);
         }
