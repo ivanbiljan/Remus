@@ -20,14 +20,13 @@ namespace Remus {
         private const BindingFlags HandlerBindingFlags = BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance;
 
         private readonly IDictionary<string, Command?> _commands = new Dictionary<string, Command?>();
-        private readonly Parsers _parsers;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CommandManager"/> class with the specified parsers.
         /// </summary>
         /// <param name="parsers">The parsers.</param>
         public CommandManager(Parsers parsers) {
-            _parsers = parsers ?? throw new ArgumentNullException(nameof(parsers));
+            Parsers = parsers ?? throw new ArgumentNullException(nameof(parsers));
         }
 
         /// <summary>
@@ -38,7 +37,7 @@ namespace Remus {
         /// <summary>
         /// Gets the parsers for this command manager.
         /// </summary>
-        public Parsers Parsers => _parsers;
+        public Parsers Parsers { get; }
 
         /// <summary>
         /// Registers commands described by the specified object.
