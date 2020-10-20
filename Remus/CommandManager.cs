@@ -99,7 +99,7 @@ namespace Remus {
                 throw new ArgumentNullException(nameof(input));
             }
 
-            var inputData = LexicalAnalyzer.Parse(input, _commands.Keys.ToList());
+            var inputData = InputMetadata.Parse(input, _commands.Keys.ToList());
             if (string.IsNullOrWhiteSpace(inputData.CommandName)) {
                 throw new InvalidCommandException(input);
             }

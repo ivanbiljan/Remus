@@ -11,10 +11,10 @@ namespace Remus {
     /// Represents a command input analyzer. This class lexes an input string to extract meaningful information.
     /// TODO: Figure out a better name for this
     /// </summary>
-    internal sealed class LexicalAnalyzer {
+    internal sealed class InputMetadata {
         // Generic command syntax: commandname [options/flags] requiredArg1 requiredArg2 "required arg 3"
 
-        private LexicalAnalyzer() {
+        private InputMetadata() {
             // Don't expose the constructor
             // Callers should rely on the Parse() method
         }
@@ -44,7 +44,7 @@ namespace Remus {
         /// </summary>
         /// <param name="input">The input string.</param>
         /// <param name="availableCommandNames">A readonly collection of available command names.</param>
-        public static LexicalAnalyzer Parse(string input, IReadOnlyCollection<string> availableCommandNames) {
+        public static InputMetadata Parse(string input, IReadOnlyCollection<string> availableCommandNames) {
             if (string.IsNullOrWhiteSpace(input)) {
                 throw new ArgumentException(nameof(input));
             }
@@ -56,7 +56,7 @@ namespace Remus {
             var commandName = ParseCommandName(availableCommandNames, tokens, ref index);
             var (options, flags) = ParseOptionals(tokens, ref index);
             var arguments = ParseArguments(tokens, ref index);
-            return new LexicalAnalyzer {
+            return new InputMetadata {
                 CommandName = commandName,
                 Options = options,
                 Flags = flags,

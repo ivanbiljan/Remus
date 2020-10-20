@@ -7,7 +7,7 @@ namespace Remus.Tests {
     public sealed class LexicalAnalyzerTests {
         [Fact]
         public void Parse_EmptyInputString_ThrowsArgumentException() {
-            Assert.Throws<ArgumentException>(() => LexicalAnalyzer.Parse(string.Empty, Array.Empty<string>()));
+            Assert.Throws<ArgumentException>(() => InputMetadata.Parse(string.Empty, Array.Empty<string>()));
         }
 
         [Fact]
@@ -18,7 +18,7 @@ namespace Remus.Tests {
                 ["arg2"] = "Hello, \"World\""
             };
 
-            var parsedData = LexicalAnalyzer.Parse(inputString, new string[] { "tar" });
+            var parsedData = InputMetadata.Parse(inputString, new string[] { "tar" });
 
             Assert.Equal("tar", parsedData.CommandName);
             Assert.Equal(new char[] { 'x', 'v' }, parsedData.Flags);

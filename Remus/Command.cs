@@ -133,7 +133,7 @@ namespace Remus {
             Description = description;
         }
 
-        internal void Run(ICommandSender sender, LexicalAnalyzer inputData) {
+        internal void Run(ICommandSender sender, InputMetadata inputData) {
             var arguments = BindParameters(sender, inputData);
             try {
                 _handler.Invoke(_handlerObject, arguments);
@@ -142,7 +142,7 @@ namespace Remus {
             }
         }
 
-        private object?[] BindParameters(ICommandSender sender, LexicalAnalyzer inputData) {
+        private object?[] BindParameters(ICommandSender sender, InputMetadata inputData) {
             var parameters = _handler.GetParameters();
             if (parameters.Length == 0) {
                 return Array.Empty<object>();
