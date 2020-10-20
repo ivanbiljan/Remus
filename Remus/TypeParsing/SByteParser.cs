@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace Remus.TypeParsing {
-    class SByteParser {
+    internal sealed class SByteParser : ITypeParser<sbyte> {
+        public sbyte Parse(string input) => sbyte.Parse(input);
     }
 }

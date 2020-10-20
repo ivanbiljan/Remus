@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace Remus.TypeParsing {
-    class UInt16Parser {
+    internal sealed class UInt16Parser : ITypeParser<ushort> {
+        public ushort Parse(string input) => ushort.Parse(input);
     }
 }
