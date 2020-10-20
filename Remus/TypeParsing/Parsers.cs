@@ -6,7 +6,7 @@ using Remus.Extensions;
 
 namespace Remus.TypeParsing {
     public static class Parsers {
-        private static readonly IDictionary<Type, ITypeParser> TypeParsers = new Dictionary<Type, ITypeParser> {
+        private static readonly IDictionary<Type, ITypeParser?> TypeParsers = new Dictionary<Type, ITypeParser?> {
             [typeof(string)] = new StringParser()
         };
 

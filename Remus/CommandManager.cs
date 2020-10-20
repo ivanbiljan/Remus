@@ -15,7 +15,7 @@ namespace Remus {
     /// <summary>
     /// Represents a command service.
     /// </summary>
-    public sealed class CommandService {
+    public sealed class CommandManager {
         private const BindingFlags HandlerBindingFlags = BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance;
         private readonly IDictionary<string, Command?> _commands = new Dictionary<string, Command?>();
 
