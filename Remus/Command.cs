@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
@@ -40,6 +41,16 @@ namespace Remus {
         /// Gets the syntax.
         /// </summary>
         public string? Syntax { get; set; }
+
+        /// <summary>
+        /// Gets an immutable array of flags this command defines.
+        /// </summary>
+        public ImmutableArray<char> Flags => _flags.Select(f => f.Item1).ToImmutableArray();
+
+        /// <summary>
+        /// Gets an immutable array of options this command defines.
+        /// </summary>
+        public ImmutableArray<string> Options => _options.Select(o => o.Item1).ToImmutableArray();
 
         // TODO: Reconsider this
         /// <summary>
@@ -91,8 +102,7 @@ namespace Remus {
             if (handler is null) {
                 throw new ArgumentNullException(nameof(handler));
             }
-
-            var requiredParameters = new List<string>();
+            
             var parameters = handler.GetParameters();
             for (var i = 0; i < parameters.Length; ++i) { // for loops are faster than foreach, especially on arrays
                 var parameter = parameters[i];
@@ -113,8 +123,6 @@ namespace Remus {
                         continue;
                     }
                 }
-
-                requiredParameters.Add(parameter.Name!);
             }
 
             _commandManager = commandManager;
