@@ -1,10 +1,12 @@
-﻿namespace Remus.TypeParsing {
+﻿namespace Remus.TypeParsing
+{
     /// <summary>
-    /// Describes a type parser.
+    ///     Describes a type parser.
     /// </summary>
-    public interface ITypeParser {
+    public interface ITypeParser
+    {
         /// <summary>
-        /// Parses an object from the given input string.
+        ///     Parses an object from the given input string.
         /// </summary>
         /// <param name="input">The input string.</param>
         /// <returns>The parsed object.</returns>

@@ -1,8 +1,10 @@
-﻿namespace Remus {
+﻿namespace Remus
+{
     /// <summary>
-    /// Describes a command sender.
+    ///     Describes a command sender.
     /// </summary>
-    public interface ICommandSender {
+    public interface ICommandSender
+    {
         void SendMessage(string message);
     }
 }

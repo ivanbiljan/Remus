@@ -1,9 +1,12 @@
 ﻿using JetBrains.Annotations;
 
-namespace Remus.Exceptions {
+namespace Remus.Exceptions
+{
     [PublicAPI]
-    public sealed class InvalidCommandException : CommandException {
-        public InvalidCommandException(string commandLine) : base($"Invalid command: '{commandLine}'") {
+    public sealed class InvalidCommandException : CommandException
+    {
+        public InvalidCommandException(string commandLine) : base($"Invalid command: '{commandLine}'")
+        {
         }
     }
 }

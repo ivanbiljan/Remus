@@ -1,14 +1,17 @@
-﻿using JetBrains.Annotations;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
+using JetBrains.Annotations;
 
-namespace Remus {
+namespace Remus
+{
     /// <summary>
-    /// Represents a CLI sender.
+    ///     Represents a CLI sender.
     /// </summary>
     [PublicAPI]
-    public sealed class ConsoleSender : ICommandSender {
-        public void SendMessage(string message) => Console.WriteLine(message);
+    public sealed class ConsoleSender : ICommandSender
+    {
+        public void SendMessage(string message)
+        {
+            Console.WriteLine(message);
+        }
     }
 }

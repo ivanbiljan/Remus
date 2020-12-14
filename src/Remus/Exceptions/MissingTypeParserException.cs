@@ -1,13 +1,13 @@
-﻿using JetBrains.Annotations;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
+using JetBrains.Annotations;
 
-namespace Remus.Exceptions {
+namespace Remus.Exceptions
+{
     [PublicAPI]
-    public sealed class MissingTypeParserException : CommandException {
-        public MissingTypeParserException(Type type) : base($"Missing type parser for type '{type}'") {
-
+    public sealed class MissingTypeParserException : CommandException
+    {
+        public MissingTypeParserException(Type type) : base($"Missing type parser for type '{type}'")
+        {
         }
     }
 }
