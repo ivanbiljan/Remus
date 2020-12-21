@@ -8,28 +8,24 @@ namespace Remus.Attributes
     /// </summary>
     [AttributeUsage(AttributeTargets.Method)]
     [PublicAPI]
-    public sealed class CommandAttribute : Attribute
+    public sealed class CommandHandlerAttribute : Attribute
     {
         /// <summary>
-        ///     Initializes a new instance of the <see cref="CommandAttribute" /> class with the specified <paramref name="name" />
+        ///     Initializes a new instance of the <see cref="CommandHandlerAttribute" /> class with the specified <paramref name="name" />
         ///     and <paramref name="description" />.
         /// </summary>
         /// <param name="name">The name.</param>
         /// <param name="description">The description.</param>
-        public CommandAttribute(string name, string description)
+        /// <exception cref="ArgumentException">Thrown if <paramref name="name"/> is <see langword="null"/> or empty.</exception>
+        public CommandHandlerAttribute(string name, string description)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentException(nameof(name));
-            }
-
-            if (description is null)
-            {
-                throw new ArgumentNullException(nameof(description));
+                throw new ArgumentException("Command name must not be null or empty", nameof(name));
             }
 
             Name = name;
-            Description = description;
+            Description = description ?? throw new ArgumentNullException(nameof(description));
         }
 
         /// <summary>

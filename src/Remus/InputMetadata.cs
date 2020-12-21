@@ -8,7 +8,6 @@ namespace Remus
 {
     /// <summary>
     ///     Represents a command input analyzer. This class lexes an input string to extract meaningful information.
-    ///     TODO: Figure out a better name for this
     /// </summary>
     internal sealed class InputMetadata
     {
@@ -57,8 +56,8 @@ namespace Remus
             var index = 0;
             var tokens = TokenizeInput(input);
             var commandName = ParseCommandName(availableCommandNames, tokens, ref index);
-            var (options, flags) = ParseOptionals(tokens, ref index);
             var arguments = ParseArguments(tokens, ref index);
+            var (options, flags) = ParseOptionals(tokens, ref index);
             return new InputMetadata
             {
                 CommandName = commandName,
@@ -139,6 +138,11 @@ namespace Remus
             var arguments = new List<string>();
             for (; index < tokens.Count; ++index)
             {
+                if (tokens[index][0] == '-')
+                {
+                    break;
+                }
+
                 arguments.Add(tokens[index]);
             }
 

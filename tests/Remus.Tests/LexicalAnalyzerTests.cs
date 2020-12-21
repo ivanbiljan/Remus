@@ -12,7 +12,7 @@ namespace Remus.Tests {
 
         [Fact]
         public void Parse_IsCorrect() {
-            var inputString = "tar    -x -v --file=\"File 1.txt\" --arg2 \"Hello, \\\"World\\\"\" Required\\ argument";
+            var inputString = "tar  Required\\ argument  -x -v --file=\"File 1.txt\" --arg2 \"Hello, \\\"World\\\"\"";
             var optionals = new Dictionary<string, string>() {
                 ["file"] = "File 1.txt",
                 ["arg2"] = "Hello, \"World\""

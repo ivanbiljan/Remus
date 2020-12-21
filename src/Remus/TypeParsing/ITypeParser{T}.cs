@@ -6,6 +6,7 @@
     /// <typeparam name="T">The type this parser encapsulates.</typeparam>
     public interface ITypeParser<out T> : ITypeParser
     {
+        /// <inheritdoc />
         object? ITypeParser.Parse(string input)
         {
             return Parse(input);

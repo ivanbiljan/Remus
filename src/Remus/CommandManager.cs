@@ -18,7 +18,8 @@ namespace Remus
         private const BindingFlags HandlerBindingFlags =
             BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance;
 
-        private readonly IDictionary<string, Command?> _commands = new Dictionary<string, Command?>();
+        private readonly IDictionary<object, List<Command>>
+            _objectsToCommands = new Dictionary<object, List<Command>>();
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="CommandManager" /> class with the specified parsers.
@@ -32,7 +33,7 @@ namespace Remus
         /// <summary>
         ///     Gets an immutable array of all commands.
         /// </summary>
-        public ImmutableArray<Command?> Commands => _commands.Values.ToImmutableArray();
+        public IEnumerable<Command> Commands => _objectsToCommands.Values.SelectMany(c => c).AsEnumerable();
 
         /// <summary>
         ///     Gets the parsers for this command manager.
@@ -50,22 +51,15 @@ namespace Remus
                 throw new ArgumentNullException(nameof(obj));
             }
 
+            var commandsForObject = _objectsToCommands.GetValueOrDefault(obj, new List<Command>());
             var methods = obj.GetType().GetMethods(HandlerBindingFlags);
             foreach (var method in methods)
             {
-                var commandAttribute = method.GetCustomAttribute<CommandAttribute>();
-                if (commandAttribute is null)
+                var commandHandlerAttribute = method.GetCustomAttribute<CommandHandlerAttribute>();
+                if (commandHandlerAttribute is null)
                 {
                     continue;
                 }
-
-                var command = new Command(this, commandAttribute.Name, commandAttribute.Description, method, obj)
-                {
-                    HelpText = commandAttribute.HelpText!,
-                    Syntax = commandAttribute.Syntax
-                };
-
-                _commands[commandAttribute.Name] = command;
             }
         }
 
@@ -84,13 +78,11 @@ namespace Remus
             for (var i = 0; i < methods.Length; ++i)
             {
                 var method = methods[i];
-                var commandAttribute = method.GetCustomAttribute<CommandAttribute>();
+                var commandAttribute = method.GetCustomAttribute<CommandHandlerAttribute>();
                 if (commandAttribute is null)
                 {
                     continue;
                 }
-
-                _commands.Remove(commandAttribute.Name);
             }
         }
 
@@ -117,7 +109,8 @@ namespace Remus
                 throw new InvalidCommandException(input);
             }
 
-            var command = _commands.GetValueOrDefault(inputData.CommandName);
+            var command = _objectsToCommands.Values.SelectMany(c => c)
+                                            .FirstOrDefault(c => c.Name == inputData.CommandName);
             if (command is null)
             {
                 throw new InvalidCommandException(inputData.CommandName);
