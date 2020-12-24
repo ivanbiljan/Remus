@@ -24,7 +24,7 @@ namespace Remus.Tests {
 
             Assert.Equal("tar", parsedData.CommandName);
             Assert.Equal(optionals, parsedData.Options);
-            Assert.Equal(new string[] { "Required argument" }, parsedData.RequiredArguments);
+            Assert.Equal(new[] { "Required argument" }, parsedData.RequiredArguments);
         }
     }
 }

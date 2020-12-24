@@ -127,7 +127,7 @@ namespace Remus
                 if (optionAttribute is not null)
                 {
                     var optionValue = inputMetadata.Options.GetValueOrDefault(optionAttribute.Name,
-                        inputMetadata.Options.GetValueOrDefault(optionAttribute.ShortName));
+                        inputMetadata.Options.GetValueOrDefault(optionAttribute.ShortName ?? ""));
                     arguments[i] = optionValue == default
                         ? parameter.ParameterType.GetDefaultValue()
                         : parser.Parse(optionValue);
@@ -142,6 +142,7 @@ namespace Remus
                     }
 
                     arguments[i] = parser.Parse(inputMetadata.RequiredArguments[argumentIndex++]);
+                    ++explicitParameterCount;
                 }
             }
 

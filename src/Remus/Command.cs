@@ -11,7 +11,7 @@ namespace Remus
     ///     Represents a command.
     /// </summary>
     [PublicAPI]
-    public sealed class Command
+    public sealed class Command : IEquatable<Command>
     {
         internal readonly CommandManager CommandManager;
         internal readonly ISet<CommandHandlerSchema> HandlerSchemas = new HashSet<CommandHandlerSchema>();
@@ -80,6 +80,31 @@ namespace Remus
         public override string ToString()
         {
             return Name;
+        }
+
+        public bool Equals(Command? other)
+        {
+            if (ReferenceEquals(null, other))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, other))
+            {
+                return true;
+            }
+
+            return CommandManager.Equals(other.CommandManager) && Name == other.Name;
+        }
+
+        public override bool Equals(object? obj)
+        {
+            return ReferenceEquals(this, obj) || obj is Command other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(CommandManager, Name);
         }
     }
 }

@@ -38,18 +38,18 @@ namespace Remus.Extensions
 
             return Type.GetTypeCode(type) switch
             {
-                TypeCode.Boolean => "bool",
-                TypeCode.Byte => "byte",
-                TypeCode.Char => "char",
+                TypeCode.Boolean  => "bool",
+                TypeCode.Byte     => "byte",
+                TypeCode.Char     => "char",
                 TypeCode.DateTime => "date",
-                TypeCode.Decimal => "floating point number",
-                TypeCode.Double => "floating point number",
-                TypeCode.Int16 => "integer",
-                TypeCode.Int32 => "integer",
-                TypeCode.Int64 => "integer",
-                TypeCode.Single => "floating point number",
-                TypeCode.String => "string",
-                _ => type.Name
+                TypeCode.Decimal  => "floating point number",
+                TypeCode.Double   => "floating point number",
+                TypeCode.Int16    => "integer",
+                TypeCode.Int32    => "integer",
+                TypeCode.Int64    => "integer",
+                TypeCode.Single   => "floating point number",
+                TypeCode.String   => "string",
+                _                 => type.Name
             };
         }
     }

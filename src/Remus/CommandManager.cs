@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Reflection;
+using JetBrains.Annotations;
 using Remus.Attributes;
 using Remus.Exceptions;
 using Remus.Extensions;
@@ -16,7 +17,7 @@ namespace Remus
     public sealed class CommandManager
     {
         private const BindingFlags HandlerBindingFlags =
-            BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance;
+            BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance;
 
         private readonly IDictionary<object, List<Command>>
             _objectsToCommands = new Dictionary<object, List<Command>>();
@@ -25,7 +26,7 @@ namespace Remus
         ///     Initializes a new instance of the <see cref="CommandManager" /> class with the specified parsers.
         /// </summary>
         /// <param name="parsers">The parsers.</param>
-        public CommandManager(Parsers parsers)
+        public CommandManager([NotNull] Parsers parsers)
         {
             Parsers = parsers ?? throw new ArgumentNullException(nameof(parsers));
         }
@@ -44,14 +45,14 @@ namespace Remus
         ///     Registers commands described by the specified object.
         /// </summary>
         /// <param name="obj">The object.</param>
-        public void Register(object obj)
+        public void Register([NotNull] object obj)
         {
             if (obj is null)
             {
                 throw new ArgumentNullException(nameof(obj));
             }
 
-            var commandsForObject = _objectsToCommands.GetValueOrDefault(obj, new List<Command>());
+            var commandsForObject = _objectsToCommands.GetValueOrDefault(obj, new List<Command>())!;
             var methods = obj.GetType().GetMethods(HandlerBindingFlags);
             foreach (var method in methods)
             {
@@ -60,30 +61,39 @@ namespace Remus
                 {
                     continue;
                 }
+
+                if (_objectsToCommands.Any(kvp =>
+                    kvp.Value.Contains(new Command(this, commandHandlerAttribute.Name)) && kvp.Key != obj))
+                {
+                    continue;
+                }
+
+                var commandHandlerSchema = new CommandHandlerSchema(commandHandlerAttribute, method, obj);
+                var command = commandsForObject.FirstOrDefault(c => c.Name == commandHandlerAttribute.Name);
+                if (command is null)
+                {
+                    command = new Command(this, commandHandlerAttribute.Name);
+                    commandsForObject.Add(command);
+                }
+
+                command.HandlerSchemas.Add(commandHandlerSchema);
             }
+
+            _objectsToCommands[obj] = commandsForObject;
         }
 
         /// <summary>
         ///     Deregisters commands described by the specified object.
         /// </summary>
         /// <param name="obj">The object.</param>
-        public void Deregister(object obj)
+        public void Deregister([NotNull] object obj)
         {
             if (obj is null)
             {
                 throw new ArgumentNullException(nameof(obj));
             }
 
-            var methods = obj.GetType().GetMethods(HandlerBindingFlags);
-            for (var i = 0; i < methods.Length; ++i)
-            {
-                var method = methods[i];
-                var commandAttribute = method.GetCustomAttribute<CommandHandlerAttribute>();
-                if (commandAttribute is null)
-                {
-                    continue;
-                }
-            }
+            _objectsToCommands.Remove(obj);
         }
 
         /// <summary>
@@ -91,7 +101,7 @@ namespace Remus
         /// </summary>
         /// <param name="sender">The sender, which must not be <see langword="null" />.</param>
         /// <param name="input">The input string, which must not be <see langword="null" />.</param>
-        public void Evaluate(ICommandSender sender, string input)
+        public void Evaluate([NotNull] ICommandSender sender, [NotNull] string input)
         {
             if (sender is null)
             {
@@ -104,7 +114,7 @@ namespace Remus
             }
 
             var inputData = InputMetadata.Parse(input,
-                _objectsToCommands.Values.SelectMany(c => c.Select(c => c.Name)).ToList());
+                _objectsToCommands.Values.SelectMany(c => c.Select(cmd => cmd.Name)).ToList());
             if (string.IsNullOrWhiteSpace(inputData.CommandName))
             {
                 throw new InvalidCommandException(input);

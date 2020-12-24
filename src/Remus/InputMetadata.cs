@@ -66,22 +66,22 @@ namespace Remus
             IReadOnlyList<string> tokens,
             ref int index)
         {
+            // This performs a greedy match
             Debug.Assert(tokens.Count > 0);
 
-            var commandName = default(string?);
+            var commandName = default(string);
+            var i = 1;
             var builder = new StringBuilder(tokens[0]);
-            for (var i = 1; i < tokens.Count; ++i)
-            {
+            do {
                 var tempCommand = builder.ToString();
-                if (!availableCommandNames.Contains(tempCommand))
-                {
+                if (!availableCommandNames.Contains(tempCommand)) {
                     break;
                 }
 
                 commandName = tempCommand;
                 index = i;
-                builder.Append(" " + tokens[i]);
-            }
+                builder.Append(" " + tokens.ElementAtOrDefault(i));
+            } while (i < tokens.Count);
 
             return commandName;
         }

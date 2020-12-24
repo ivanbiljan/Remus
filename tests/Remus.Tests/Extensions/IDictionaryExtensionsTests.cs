@@ -8,7 +8,7 @@ namespace Remus.Tests.Extensions {
     public sealed class IDictionaryExtensionsTests {
         [Fact]
         public void GetValueOrDefault_NullDictionary_ThrowsArgumentNullException() {
-            Assert.Throws<ArgumentNullException>(() => IDictionaryExtensions.GetValueOrDefault<object, object>(null, null));
+            Assert.Throws<ArgumentNullException>(() => IDictionaryExtensions.GetValueOrDefault<object, object>(null!, null));
         }
 
         [Fact]
