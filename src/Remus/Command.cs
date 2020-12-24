@@ -22,7 +22,7 @@ namespace Remus
         /// </summary>
         /// <param name="commandManager">The <see cref="Remus.CommandManager" /> associated with this command.</param>
         /// <param name="name">The name.</param>
-        internal Command(CommandManager commandManager, string name)
+        internal Command([NotNull] CommandManager commandManager, [NotNull] string name)
         {
             CommandManager = commandManager ?? throw new ArgumentNullException(nameof(commandManager));
             Name = name ?? throw new ArgumentNullException(nameof(name));
@@ -37,8 +37,13 @@ namespace Remus
         ///     Registers a new command handler for this command.
         /// </summary>
         /// <param name="commandHandlerSchema">The command handler schema.</param>
-        internal void RegisterHandler(CommandHandlerSchema commandHandlerSchema)
+        internal void RegisterHandler([NotNull] CommandHandlerSchema commandHandlerSchema)
         {
+            if (commandHandlerSchema is null)
+            {
+                throw new ArgumentNullException(nameof(commandHandlerSchema));
+            }
+
             HandlerSchemas.Add(commandHandlerSchema);
         }
 
