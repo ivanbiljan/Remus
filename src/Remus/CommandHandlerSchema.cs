@@ -13,7 +13,6 @@ namespace Remus {
     internal sealed class CommandHandlerSchema
     {
         private readonly CommandHandlerAttribute _commandHandlerAttribute;
-        private readonly ISet<char> _flags = new HashSet<char>();
         private readonly ISet<string> _options = new HashSet<string>();
 
         /// <summary>
@@ -47,17 +46,6 @@ namespace Remus {
                 if (optionalAttribute is not null)
                 {
                     _options.Add(optionalAttribute.Name);
-                }
-
-                if (parameter.ParameterType == typeof(bool))
-                {
-                    var flagAttribute = parameter.GetCustomAttribute<FlagAttribute>();
-                    if (flagAttribute is null)
-                    {
-                        continue;
-                    }
-
-                    _flags.Add(flagAttribute.Identifier);
                 }
             }
         }

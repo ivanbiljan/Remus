@@ -22,22 +22,17 @@ namespace Remus
         /// <summary>
         ///     Gets the command name.
         /// </summary>
-        public string? CommandName { get; private set; }
+        public string? CommandName { get; private init; }
 
         /// <summary>
         ///     Gets a read-only collection of required arguments.
         /// </summary>
-        public IReadOnlyList<string> RequiredArguments { get; private set; } = null!;
+        public IReadOnlyList<string> RequiredArguments { get; private init; } = null!;
 
         /// <summary>
         ///     Gets a read-only collection of option-value pairs.
         /// </summary>
-        public IReadOnlyDictionary<string, string> Options { get; private set; } = null!;
-
-        /// <summary>
-        ///     Gets a read-only collection of flags.
-        /// </summary>
-        public IReadOnlyList<char> Flags { get; private set; } = null!;
+        public IReadOnlyDictionary<string, string?> Options { get; private init; } = null!;
 
         /// <summary>
         ///     Parses a given input string by trying to match it against a list of available command names.
@@ -48,7 +43,7 @@ namespace Remus
         {
             if (string.IsNullOrWhiteSpace(input))
             {
-                throw new ArgumentException(nameof(input));
+                throw new ArgumentException("Input must not be null or empty.", nameof(input));
             }
 
             Debug.Assert(input.Length <= 1024);
@@ -57,12 +52,11 @@ namespace Remus
             var tokens = TokenizeInput(input);
             var commandName = ParseCommandName(availableCommandNames, tokens, ref index);
             var arguments = ParseArguments(tokens, ref index);
-            var (options, flags) = ParseOptionals(tokens, ref index);
+            var options = ParseOptionals(tokens, ref index);
             return new InputMetadata
             {
                 CommandName = commandName,
                 Options = options,
-                Flags = flags,
                 RequiredArguments = arguments
             };
         }
@@ -92,45 +86,53 @@ namespace Remus
             return commandName;
         }
 
-        private static (Dictionary<string, string>, List<char>) ParseOptionals(
+        private static Dictionary<string, string?> ParseOptionals(
             IReadOnlyList<string> tokens,
             ref int index)
         {
-            var options = new Dictionary<string, string>();
-            var flags = new List<char>();
+            var currentOption = default(string);
+            var options = new Dictionary<string, string?>();
             for (var i = index; i < tokens.Count; ++i)
             {
                 var token = tokens[index];
                 if (!token.StartsWith("-"))
                 {
                     // No options left to consume
+                    if (currentOption == default)
+                    {
+                        break;
+                    }
+
+                    options[currentOption] = token;
+                    currentOption = default;
+                    ++index;
                     continue;
                 }
 
+                if (currentOption != default)
+                {
+                    options[currentOption] = default;
+                }
+                
                 if (!token.StartsWith("--"))
                 {
-                    flags.Add(token[1]);
+                    currentOption = token[1].ToString();
                 }
                 else
                 {
-                    var option = token[2..];
-                    var indexOfEquals = option.IndexOf('=');
+                    currentOption = token[2..];
+                    var indexOfEquals = currentOption.IndexOf('=');
                     if (indexOfEquals > 0)
                     {
-                        options[option[..indexOfEquals]] = option[(indexOfEquals + 1)..];
-                    }
-                    else
-                    {
-                        // Missing options will be handled by the command service or whatever responsible for binding and invocation
-                        options[option] = tokens.ElementAtOrDefault(i + 1);
-                        ++index;
+                        options[currentOption[..indexOfEquals]] = currentOption[(indexOfEquals + 1)..];
+                        currentOption = default;
                     }
                 }
 
                 ++index;
             }
 
-            return (options, flags);
+            return options;
         }
 
         private static List<string> ParseArguments(IReadOnlyList<string> tokens, ref int index)

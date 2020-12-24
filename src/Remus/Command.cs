@@ -13,18 +13,18 @@ namespace Remus
     [PublicAPI]
     public sealed class Command
     {
-        private readonly CommandManager _commandManager;
-        private readonly ISet<CommandHandlerSchema> _handlerSchemas = new HashSet<CommandHandlerSchema>();
+        internal readonly CommandManager CommandManager;
+        internal readonly ISet<CommandHandlerSchema> HandlerSchemas = new HashSet<CommandHandlerSchema>();
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="Command" /> class with the specified command manager, name,
         ///     description and handler.
         /// </summary>
-        /// <param name="commandManager">The <see cref="CommandManager" /> associated with this command.</param>
+        /// <param name="commandManager">The <see cref="Remus.CommandManager" /> associated with this command.</param>
         /// <param name="name">The name.</param>
         internal Command(CommandManager commandManager, string name)
         {
-            _commandManager = commandManager ?? throw new ArgumentNullException(nameof(commandManager));
+            CommandManager = commandManager ?? throw new ArgumentNullException(nameof(commandManager));
             Name = name ?? throw new ArgumentNullException(nameof(name));
         }
 
@@ -39,7 +39,7 @@ namespace Remus
         /// <param name="commandHandlerSchema">The command handler schema.</param>
         internal void RegisterHandler(CommandHandlerSchema commandHandlerSchema)
         {
-            _handlerSchemas.Add(commandHandlerSchema);
+            HandlerSchemas.Add(commandHandlerSchema);
         }
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace Remus
                 throw new ArgumentNullException(nameof(inputData));
             }
 
-            var handlerSchema = Binder.ResolveMethodCall(_handlerSchemas.ToArray(), inputData, out var args);
+            var handlerSchema = Binder.ResolveMethodCall(this, sender, inputData, out var args);
             if (handlerSchema is null)
             {
                 return;

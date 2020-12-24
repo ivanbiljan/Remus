@@ -9,7 +9,7 @@ namespace Remus.Extensions
     /// </summary>
     public static class IDictionaryExtensions
     {
-        public static TValue GetValueOrDefault<TKey, TValue>(
+        public static TValue? GetValueOrDefault<TKey, TValue>(
             [NotNull] this IDictionary<TKey, TValue> dictionary,
             TKey key,
             TValue defaultValue = default) where TKey : notnull

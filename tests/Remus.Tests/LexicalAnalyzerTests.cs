@@ -13,7 +13,9 @@ namespace Remus.Tests {
         [Fact]
         public void Parse_IsCorrect() {
             var inputString = "tar  Required\\ argument  -x -v --file=\"File 1.txt\" --arg2 \"Hello, \\\"World\\\"\"";
-            var optionals = new Dictionary<string, string>() {
+            var optionals = new Dictionary<string, string> {
+                ["x"] = null,
+                ["v"] = null,
                 ["file"] = "File 1.txt",
                 ["arg2"] = "Hello, \"World\""
             };
@@ -21,7 +23,6 @@ namespace Remus.Tests {
             var parsedData = InputMetadata.Parse(inputString, new string[] { "tar" });
 
             Assert.Equal("tar", parsedData.CommandName);
-            Assert.Equal(new char[] { 'x', 'v' }, parsedData.Flags);
             Assert.Equal(optionals, parsedData.Options);
             Assert.Equal(new string[] { "Required argument" }, parsedData.RequiredArguments);
         }

@@ -103,7 +103,8 @@ namespace Remus
                 throw new ArgumentNullException(nameof(input));
             }
 
-            var inputData = InputMetadata.Parse(input, _commands.Keys.ToList());
+            var inputData = InputMetadata.Parse(input,
+                _objectsToCommands.Values.SelectMany(c => c.Select(c => c.Name)).ToList());
             if (string.IsNullOrWhiteSpace(inputData.CommandName))
             {
                 throw new InvalidCommandException(input);
