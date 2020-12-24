@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Remus.Attributes;
+﻿using Remus.Attributes;
 
-namespace Remus.Tests {
-    public sealed  class TestCommandRegistry {
+namespace Remus.Tests
+{
+    public sealed class TestCommandRegistry
+    {
         public int Number { get; private set; }
         public bool Boolean { get; private set; }
         public string String { get; private set; }

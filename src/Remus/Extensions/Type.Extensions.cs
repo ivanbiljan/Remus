@@ -9,9 +9,9 @@ namespace Remus.Extensions
     public static class TypeExtensions
     {
         /// <summary>
-        /// Gets a default value for the specified type.
+        ///     Gets a default value for the specified type.
         /// </summary>
-        /// <param name="type">The type, which must not be <see langword="null"/>.</param>
+        /// <param name="type">The type, which must not be <see langword="null" />.</param>
         /// <returns>The default value for the type.</returns>
         [CanBeNull]
         public static object? GetDefaultValue(this Type type)
@@ -25,9 +25,9 @@ namespace Remus.Extensions
         }
 
         /// <summary>
-        /// Gets a type's "friendly" name.
+        ///     Gets a type's "friendly" name.
         /// </summary>
-        /// <param name="type">The type, which must not be <see langword="null"/>.</param>
+        /// <param name="type">The type, which must not be <see langword="null" />.</param>
         /// <returns>The type's friendly name.</returns>
         public static string GetFriendlyName(this Type type)
         {

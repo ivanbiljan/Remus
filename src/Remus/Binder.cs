@@ -100,7 +100,7 @@ namespace Remus
             var implicitParameterCount = 0;
             var stringParameterCount = 0;
             var argumentIndex = 0;
-            
+
             for (var i = 0; i < parameters.Length; ++i)
             {
                 var parameter = parameters[i];

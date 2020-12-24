@@ -5,7 +5,7 @@ using Remus.Extensions;
 namespace Remus.TypeParsing
 {
     /// <summary>
-    /// Represents a collection of parsers.
+    ///     Represents a collection of parsers.
     /// </summary>
     public sealed class Parsers
     {

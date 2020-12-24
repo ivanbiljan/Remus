@@ -72,9 +72,11 @@ namespace Remus
             var commandName = default(string);
             var i = 1;
             var builder = new StringBuilder(tokens[0]);
-            do {
+            do
+            {
                 var tempCommand = builder.ToString();
-                if (!availableCommandNames.Contains(tempCommand)) {
+                if (!availableCommandNames.Contains(tempCommand))
+                {
                     break;
                 }
 
@@ -113,7 +115,7 @@ namespace Remus
                 {
                     options[currentOption] = default;
                 }
-                
+
                 if (!token.StartsWith("--"))
                 {
                     currentOption = token[1].ToString();

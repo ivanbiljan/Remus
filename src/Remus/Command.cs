@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using JetBrains.Annotations;
 using Remus.Exceptions;
@@ -32,6 +31,21 @@ namespace Remus
         ///     Gets the name.
         /// </summary>
         public string Name { get; }
+
+        public bool Equals(Command? other)
+        {
+            if (ReferenceEquals(null, other))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, other))
+            {
+                return true;
+            }
+
+            return CommandManager.Equals(other.CommandManager) && Name == other.Name;
+        }
 
         /// <summary>
         ///     Registers a new command handler for this command.
@@ -85,21 +99,6 @@ namespace Remus
         public override string ToString()
         {
             return Name;
-        }
-
-        public bool Equals(Command? other)
-        {
-            if (ReferenceEquals(null, other))
-            {
-                return false;
-            }
-
-            if (ReferenceEquals(this, other))
-            {
-                return true;
-            }
-
-            return CommandManager.Equals(other.CommandManager) && Name == other.Name;
         }
 
         public override bool Equals(object? obj)

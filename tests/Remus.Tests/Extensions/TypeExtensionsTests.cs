@@ -1,21 +1,22 @@
 ﻿using Remus.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Xunit;
 
-namespace Remus.Tests.Extensions {
-    public sealed class TypeExtensionsTests {
+namespace Remus.Tests.Extensions
+{
+    public sealed class TypeExtensionsTests
+    {
         [Fact]
-        public void ValueType_ReturnsDefault() {
-            var value = TypeExtensions.GetDefaultValue(typeof(int));
+        public void ValueType_ReturnsDefault()
+        {
+            var value = typeof(int).GetDefaultValue();
 
             Assert.Equal(0, value);
         }
 
         [Fact]
-        public void ReferenceType_ReturnsNull() {
-            var value = TypeExtensions.GetDefaultValue(typeof(object));
+        public void ReferenceType_ReturnsNull()
+        {
+            var value = typeof(object).GetDefaultValue();
 
             Assert.Null(value);
         }

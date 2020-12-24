@@ -25,9 +25,9 @@ namespace Remus.Attributes
         ///     Gets the name.
         /// </summary>
         public string Name { get; }
-        
+
         /// <summary>
-        /// Gets or sets the short name.
+        ///     Gets or sets the short name.
         /// </summary>
         public string? ShortName { get; set; }
 
