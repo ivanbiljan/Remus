@@ -61,18 +61,29 @@ namespace Remus.Tests
         [Fact]
         public void Evaluate_IsCorrect()
         {
+            var sender = new ConsoleSender();
             var commandManager = new CommandManager(new Parsers());
             var commandRegistry = new TestCommandRegistry();
             commandManager.Register(commandRegistry);
 
-            commandManager.Evaluate(new ConsoleSender(), "test");
+            commandManager.Evaluate(sender, "test");
             Assert.Equal(1024, commandRegistry.Number);
 
-            commandManager.Evaluate(new ConsoleSender(), "test 2048");
+            commandManager.Evaluate(sender, "test 2048");
             Assert.Equal(2048, commandRegistry.Number);
 
-            commandManager.Evaluate(new ConsoleSender(), "test -x 200");
+            commandManager.Evaluate(sender, "test -x 200");
             Assert.Equal(0, commandRegistry.Number);
+            
+            commandManager.Evaluate(sender, "test2 123 true 123");
+            Assert.Equal(123, commandRegistry.Number);
+            Assert.True(commandRegistry.Boolean);
+            Assert.Equal("123", commandRegistry.String);
+
+            commandManager.Evaluate(sender, "test2 str true 123");
+            Assert.Equal(-1, commandRegistry.Number);
+            Assert.True(commandRegistry.Boolean);
+            Assert.Equal("123", commandRegistry.String);
         }
     }
 }

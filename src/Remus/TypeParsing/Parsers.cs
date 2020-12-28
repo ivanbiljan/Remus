@@ -20,7 +20,8 @@ namespace Remus.TypeParsing
             [typeof(uint)] = new UInt32Parser(),
             [typeof(long)] = new Int64Parser(),
             [typeof(ulong)] = new UInt64Parser(),
-            [typeof(char)] = new CharParser()
+            [typeof(char)] = new CharParser(),
+            [typeof(string)] = new StringParser()
         };
 
         private readonly IDictionary<Type, ITypeParser?> _parsers = new Dictionary<Type, ITypeParser?>();
@@ -61,7 +62,7 @@ namespace Remus.TypeParsing
         /// <returns>The parser, or <see langword="null" /> if no parser is defined for the given type.</returns>
         public ITypeParser? GetParser(Type type)
         {
-            if (type.IsPrimitive)
+            if (type.IsPrimitive || type == typeof(string))
             {
                 return PrimitiveParsers[type];
             }
