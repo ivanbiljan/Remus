@@ -7,13 +7,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Remus", "src\Remus\Remus.cs
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Remus.Tests", "tests\Remus.Tests\Remus.Tests.csproj", "{22B11D2A-0CE0-4620-80AA-C8ADF95132D9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Remus.Analyzers", "src\Remus.Analyzers\Remus.Analyzers\Remus.Analyzers.csproj", "{B5A5232E-227F-4384-BDE3-4A34AE7481A2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Remus.Analyzers", "src\Remus.Analyzers\Remus.Analyzers\Remus.Analyzers.csproj", "{B5A5232E-227F-4384-BDE3-4A34AE7481A2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Remus.Analyzers.CodeFixes", "src\Remus.Analyzers\Remus.Analyzers.CodeFixes\Remus.Analyzers.CodeFixes.csproj", "{7C359198-7B85-4300-A1F2-EA09197F5B83}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Remus.Analyzers.CodeFixes", "src\Remus.Analyzers\Remus.Analyzers.CodeFixes\Remus.Analyzers.CodeFixes.csproj", "{7C359198-7B85-4300-A1F2-EA09197F5B83}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Remus.Analyzers.Package", "src\Remus.Analyzers\Remus.Analyzers.Package\Remus.Analyzers.Package.csproj", "{75ACC976-1718-44FA-8100-32EECA5D4BC1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Remus.Analyzers.Package", "src\Remus.Analyzers\Remus.Analyzers.Package\Remus.Analyzers.Package.csproj", "{75ACC976-1718-44FA-8100-32EECA5D4BC1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Remus.Analyzers.Vsix", "src\Remus.Analyzers\Remus.Analyzers.Vsix\Remus.Analyzers.Vsix.csproj", "{8789E77E-1F21-4E75-9611-B0DE6249067D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Remus.Analyzers.Vsix", "src\Remus.Analyzers\Remus.Analyzers.Vsix\Remus.Analyzers.Vsix.csproj", "{8789E77E-1F21-4E75-9611-B0DE6249067D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Remus.Analyzers.Tests", "tests\Remus.Analyzers.Tests\Remus.Analyzers.Tests.csproj", "{2897B9FF-9551-43D8-8F3B-5876072E5B5A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{8789E77E-1F21-4E75-9611-B0DE6249067D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8789E77E-1F21-4E75-9611-B0DE6249067D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8789E77E-1F21-4E75-9611-B0DE6249067D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2897B9FF-9551-43D8-8F3B-5876072E5B5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2897B9FF-9551-43D8-8F3B-5876072E5B5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2897B9FF-9551-43D8-8F3B-5876072E5B5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2897B9FF-9551-43D8-8F3B-5876072E5B5A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

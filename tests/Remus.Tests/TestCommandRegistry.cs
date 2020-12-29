@@ -21,7 +21,7 @@ namespace Remus.Tests
         }
 
         [CommandHandler("test", "")]
-        public void TestOverload3([OptionalArgument("x", "")] int x)
+        public void TestOverload3([OptionalArgument("x", "")] int x = 0)
         {
             Number = 0;
         }

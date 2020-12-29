@@ -33,7 +33,7 @@ namespace Remus.Analyzers
             context.RegisterSymbolAction(AnalyzeMethod, SymbolKind.Method);
         }
 
-        private void AnalyzeMethod(SymbolAnalysisContext context)
+        private static void AnalyzeMethod(SymbolAnalysisContext context)
         {
             if (context.Symbol is not IMethodSymbol methodSymbol)
             {
