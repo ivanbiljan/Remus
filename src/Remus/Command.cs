@@ -92,7 +92,6 @@ namespace Remus
             }
             catch (TargetInvocationException ex)
             {
-                throw new CommandException("Command failed.", ex);
             }
         }
 

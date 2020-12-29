@@ -64,7 +64,7 @@ namespace Remus
                         bestScore = score;
                     }
                 }
-                catch
+                catch (TypeParserException)
                 {
                 }
             }
@@ -126,7 +126,7 @@ namespace Remus
                 var parser = parsers.GetParser(parameter.ParameterType);
                 if (parser is null)
                 {
-                    throw new MissingTypeParserException(parameter.ParameterType);
+                    throw new TypeParserException($"Missing type parser for type '{parameter.ParameterType}'");
                 }
 
                 var optionAttribute = parameter.GetCustomAttribute<OptionalArgumentAttribute>();

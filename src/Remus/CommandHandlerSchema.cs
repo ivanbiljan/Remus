@@ -11,7 +11,6 @@ namespace Remus
     internal sealed class CommandHandlerSchema
     {
         private readonly CommandHandlerAttribute _commandHandlerAttribute;
-        private readonly ISet<string> _options = new HashSet<string>();
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="CommandHandlerSchema" /> class.
@@ -28,17 +27,6 @@ namespace Remus
                                        throw new ArgumentNullException(nameof(commandHandlerAttribute));
             Callback = callback ?? throw new ArgumentNullException(nameof(callback));
             HandlerObject = handlerObject;
-
-            var parameters = callback.GetParameters();
-            for (var i = 0; i < parameters.Length; ++i)
-            {
-                var parameter = parameters[i];
-                var optionalAttribute = parameter.GetCustomAttribute<OptionalArgumentAttribute>();
-                if (optionalAttribute is not null)
-                {
-                    _options.Add(optionalAttribute.Name);
-                }
-            }
         }
 
         /// <summary>

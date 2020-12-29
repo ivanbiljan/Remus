@@ -37,7 +37,7 @@ namespace Remus.Tests
         }
 
         [Fact]
-        public void Equals_CommandsNotEqual_ReturnsTrue()
+        public void Equals_CommandsEqual_ReturnsTrue()
         {
             var commandManager = new CommandManager(new Parsers());
             var command1 = new Command(commandManager, "test");

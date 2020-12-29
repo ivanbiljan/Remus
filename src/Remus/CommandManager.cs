@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using JetBrains.Annotations;
@@ -33,6 +34,7 @@ namespace Remus
         /// <summary>
         ///     Gets an immutable array of all commands.
         /// </summary>
+        [ItemNotNull]
         public IEnumerable<Command> Commands => _objectsToCommands.Values.SelectMany(c => c).AsEnumerable();
 
         /// <summary>
@@ -120,12 +122,7 @@ namespace Remus
             }
 
             var command = _objectsToCommands.Values.SelectMany(c => c)
-                                            .FirstOrDefault(c => c.Name == inputData.CommandName);
-            if (command is null)
-            {
-                throw new InvalidCommandException(inputData.CommandName);
-            }
-
+                                            .FirstOrDefault(c => c.Name == inputData.CommandName)!;
             command.Run(sender, inputData);
         }
     }
