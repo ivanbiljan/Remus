@@ -13,13 +13,18 @@ steps:
 - task: UseDotNet@2
   inputs:
     version: '5.0.x'
-- task: DotNetCoreCLI@2
-  displayName: Restore
+- task: NuGetCommand@2
   inputs:
-    command: restore
+    command: 'restore'
+    restoreSolution: '**/*.sln'
+    feedsToUse: 'config'
+    nugetConfigPath: 'NuGet.config'
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'restore'
     projects: '**/*.csproj'
-    feedsToUse: config
-    nugetConfigPath: NuGet.config
+    feedsToUse: 'config'
+    nugetConfigPath: 'NuGet.config'
 
 - script: |
 - task: DotNetCoreCLI@2
