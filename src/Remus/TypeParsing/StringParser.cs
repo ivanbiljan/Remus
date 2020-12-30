@@ -6,5 +6,11 @@
         {
             return input;
         }
+
+        public bool TryParse(string input, out string obj)
+        {
+            obj = input;
+            return true;
+        }
     }
 }

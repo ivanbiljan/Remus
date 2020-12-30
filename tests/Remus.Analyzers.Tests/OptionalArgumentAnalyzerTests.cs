@@ -32,10 +32,6 @@ namespace AnalyzerTest {
 using System;
 namespace AnalyzerTest {
     class Program {
-        static void Main(string[] args) {
-            
-        }
-
         [Remus.Attributes.CommandHandler(""name"", """")]
         private static void CommandHandlerMethod([Remus.Attributes.OptionalArgument] int x = 0) {
         }
@@ -68,7 +64,7 @@ namespace AnalyzerTest {
                 Severity = DiagnosticSeverity.Error,
                 Locations = new[]
                 {
-                    new DiagnosticResultLocation("Test0.cs", 7, 86)
+                    new DiagnosticResultLocation("Test0.cs", 9, 54)
                 }
             };
 

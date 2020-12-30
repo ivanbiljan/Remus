@@ -6,5 +6,10 @@
         {
             return ulong.Parse(input);
         }
+
+        public bool TryParse(string input, out ulong obj)
+        {
+            return ulong.TryParse(input, out obj);
+        }
     }
 }

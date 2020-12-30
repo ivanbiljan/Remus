@@ -6,5 +6,10 @@
         {
             return short.Parse(input);
         }
+
+        public bool TryParse(string input, out short obj)
+        {
+            return short.TryParse(input, out obj);
+        }
     }
 }

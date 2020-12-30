@@ -6,5 +6,10 @@
         {
             return byte.Parse(input);
         }
+
+        public bool TryParse(string input, out byte obj)
+        {
+            return byte.TryParse(input, out obj);
+        }
     }
 }

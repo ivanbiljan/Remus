@@ -6,5 +6,10 @@
         {
             return sbyte.Parse(input);
         }
+
+        public bool TryParse(string input, out sbyte obj)
+        {
+            return sbyte.TryParse(input, out obj);
+        }
     }
 }

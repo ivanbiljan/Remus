@@ -43,7 +43,7 @@ namespace Remus.Analyzers
             var commandHandlerAttribute =
                 context.Compilation.GetTypeByMetadataName("Remus.Attributes.CommandHandlerAttribute");
             var methodAttributes = methodSymbol.GetAttributes();
-            if (!methodAttributes.Any(ad => SymbolEqualityComparer.Default.Equals(ad.AttributeClass, commandHandlerAttribute)))
+            if (!methodAttributes.Any(a => a.AttributeClass.Name == commandHandlerAttribute.Name))
             {
                 return;
             }
@@ -53,8 +53,8 @@ namespace Remus.Analyzers
             foreach (var parameterSymbol in methodSymbol.Parameters)
             {
                 var parameterAttributes = parameterSymbol.GetAttributes();
-                var hasOptionalArgumentAttribute = parameterAttributes.Any(ad =>
-                    SymbolEqualityComparer.Default.Equals(ad.AttributeClass, optionalArgumentAttribute));
+                var hasOptionalArgumentAttribute =
+                    parameterAttributes.Any(a => a.AttributeClass.Name == optionalArgumentAttribute.Name);
                 if (hasOptionalArgumentAttribute && !parameterSymbol.IsOptional || parameterSymbol.IsOptional && !hasOptionalArgumentAttribute)
                 {
                     context.ReportDiagnostic(Diagnostic.Create(Rule, parameterSymbol.Locations[0]));

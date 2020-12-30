@@ -6,5 +6,10 @@
         {
             return ushort.Parse(input);
         }
+
+        public bool TryParse(string input, out ushort obj)
+        {
+            return ushort.TryParse(input, out obj);
+        }
     }
 }

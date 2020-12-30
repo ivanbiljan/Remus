@@ -6,5 +6,10 @@
         {
             return uint.Parse(input);
         }
+
+        public bool TryParse(string input, out uint obj)
+        {
+            return uint.TryParse(input, out obj);
+        }
     }
 }
