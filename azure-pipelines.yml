@@ -4,7 +4,10 @@
 # https://aka.ms/yaml
 
 trigger:
-- main
+- master
+
+variables:
+  buildConfiguration: 'Release'
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -19,14 +22,6 @@ steps:
     restoreSolution: '**/*.sln'
     feedsToUse: 'config'
     nugetConfigPath: 'NuGet.config'
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'restore'
-    projects: '**/*.csproj'
-    feedsToUse: 'config'
-    nugetConfigPath: 'NuGet.config'
-
-- script: |
 - task: DotNetCoreCLI@2
   displayName: Build
   inputs:
