@@ -18,21 +18,25 @@ steps:
     packageType: sdk
     version: '5.0.x'
 - task: NuGetToolInstaller@1
+  displayName: 'Configure NuGet version'
   inputs:
     versionSpec: 5.8
 - task: NuGetCommand@2
+  displayName: 'NuGet Restore'
   inputs:
     command: 'restore'
     restoreSolution: '**/*.sln'
     feedsToUse: 'config'
     nugetConfigPath: 'NuGet.config'
-- task: MSBuild@1
+- task: DotNetCoreCLI@2
   displayName: Build
   inputs:
-    solution: '**/*.sln'
-    msbuildVersion: latest
-    restoreNugetPackages: true
+    command: 'build'
+    projects: |
+      **/*.csproj
+      !**/*Vsix*.csproj
 - task: DotNetCoreCLI@2
+  displayName: Tests
   inputs:
     command: test
     projects: '**/*.Tests/*.csproj'
