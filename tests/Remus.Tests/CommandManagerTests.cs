@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Remus.Exceptions;
-using Remus.TypeParsing;
+using Remus.Parsing.TypeParsers;
 using Xunit;
 
 namespace Remus.Tests

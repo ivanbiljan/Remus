@@ -6,7 +6,7 @@ using JetBrains.Annotations;
 using Remus.Attributes;
 using Remus.Exceptions;
 using Remus.Extensions;
-using Remus.TypeParsing;
+using Remus.Parsing.TypeParsers;
 
 namespace Remus
 {

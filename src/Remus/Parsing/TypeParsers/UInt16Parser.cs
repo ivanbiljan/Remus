@@ -1,4 +1,4 @@
-﻿namespace Remus.TypeParsing
+﻿namespace Remus.Parsing.TypeParsers
 {
     internal sealed class UInt16Parser : ITypeParser<ushort>
     {

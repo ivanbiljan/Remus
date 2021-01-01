@@ -1,5 +1,5 @@
 ﻿using System;
-using Remus.TypeParsing;
+using Remus.Parsing.TypeParsers;
 using Xunit;
 
 namespace Remus.Tests

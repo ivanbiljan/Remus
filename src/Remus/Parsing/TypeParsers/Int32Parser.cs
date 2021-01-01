@@ -1,4 +1,4 @@
-﻿namespace Remus.TypeParsing
+﻿namespace Remus.Parsing.TypeParsers
 {
     internal sealed class Int32Parser : ITypeParser<int>
     {

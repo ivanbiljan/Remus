@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Remus.Extensions;
 
-namespace Remus.TypeParsing
+namespace Remus.Parsing.TypeParsers
 {
     /// <summary>
     ///     Represents a collection of parsers.
