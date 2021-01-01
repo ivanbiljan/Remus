@@ -7,6 +7,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Remus.Parsing.Arguments {
+    /// <summary>
+    /// Represents the default argument parser. Aims to replicate nix style option parsing and uses whitespace as argument separators.
+    /// </summary>
     internal sealed class DefaultArgumentParser : IArgumentParser
     {
         /// <inheritdoc />
