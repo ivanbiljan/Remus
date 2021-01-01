@@ -30,6 +30,8 @@ steps:
   displayName: Build
   inputs:
     command: build
+    feedsToUse: 'config'
+    nugetConfigPath: 'NuGet.config'
     projects: '**/*.csproj'
     arguments: '--configuration $(buildConfiguration)'
 - task: DotNetCoreCLI@2
