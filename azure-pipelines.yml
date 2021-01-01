@@ -26,14 +26,12 @@ steps:
     restoreSolution: '**/*.sln'
     feedsToUse: 'config'
     nugetConfigPath: 'NuGet.config'
-- task: DotNetCoreCLI@2
+- task: MSBuild@1
   displayName: Build
   inputs:
-    command: build
-    feedsToUse: 'config'
-    nugetConfigPath: 'NuGet.config'
-    projects: '**/*.csproj'
-    arguments: '--configuration $(buildConfiguration)'
+    solution: '**/*.sln'
+    msbuildVersion: latest
+    restoreNugetPackages: true
 - task: DotNetCoreCLI@2
   inputs:
     command: test
