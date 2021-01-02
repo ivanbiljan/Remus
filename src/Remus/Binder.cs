@@ -55,14 +55,14 @@ namespace Remus
 
                 try
                 {
-                    var score = EvaluateMethodScore(parameters, command.CommandManager.Parsers, commandSender,
-                        inputMetadata, out var args);
-                    if (score > bestScore)
-                    {
-                        result = schema;
-                        arguments = args;
-                        bestScore = score;
-                    }
+                    //var score = EvaluateMethodScore(parameters, command.CommandManager.Parsers, commandSender,
+                    //    inputMetadata, out var args);
+                    //if (score > bestScore)
+                    //{
+                    //    result = schema;
+                    //    arguments = args;
+                    //    bestScore = score;
+                    //}
                 }
                 catch (TypeParserException)
                 {

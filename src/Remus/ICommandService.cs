@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using Remus.Parsing.Arguments;
+using Remus.Parsing.TypeParsers;
 
 namespace Remus {
     /// <summary>
@@ -12,6 +14,16 @@ namespace Remus {
     [PublicAPI]
     public interface ICommandService
     {
+        /// <summary>
+        /// Gets the argument parser for this command service.
+        /// </summary>
+        IArgumentParser ArgumentParser { get; }
+        
+        /// <summary>
+        /// Gets the parser collection for this command service.
+        /// </summary>
+        IParserCollection Parsers { get; }
+        
         /// <summary>
         /// Registers commands defined by the specified object.
         /// </summary>
