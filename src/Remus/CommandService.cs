@@ -16,7 +16,7 @@ namespace Remus
     /// <summary>
     ///     Represents a command service.
     /// </summary>
-    public sealed class CommandManager : ICommandService
+    public sealed class CommandService : ICommandService
     {
         private const BindingFlags HandlerBindingFlags =
             BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance;
@@ -25,11 +25,11 @@ namespace Remus
             _objectsToCommands = new Dictionary<object, List<Command>>();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CommandManager"/> class with the specified <see cref="IArgumentParser"/> and <see cref="ITypeParserCollection"/>.
+        /// Initializes a new instance of the <see cref="CommandService"/> class with the specified <see cref="IArgumentParser"/> and <see cref="ITypeParserCollection"/>.
         /// </summary>
         /// <param name="argumentParser">The <see cref="IArgumentParser"/> instance, which must not be <see langword="null"/>.</param>
         /// <param name="parsers">The <see cref="ITypeParserCollection"/> instance, which must not be <see langword="null"/>.</param>
-        public CommandManager([NotNull] IArgumentParser argumentParser, [NotNull] ITypeParserCollection parsers)
+        public CommandService([NotNull] IArgumentParser argumentParser, [NotNull] ITypeParserCollection parsers)
         {
             ArgumentParser = argumentParser ?? throw new ArgumentNullException(nameof(argumentParser));
             TypeParsers = parsers ?? throw new ArgumentNullException(nameof(parsers));

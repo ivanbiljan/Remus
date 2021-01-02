@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using JetBrains.Annotations;
 using Remus.Exceptions;
+using Remus.Parsing.Arguments;
 
 namespace Remus
 {
@@ -12,18 +13,12 @@ namespace Remus
     [PublicAPI]
     public sealed class Command : IEquatable<Command>
     {
-        internal readonly CommandManager CommandManager;
+        internal readonly ICommandService CommandService;
         internal readonly ISet<CommandHandlerSchema> HandlerSchemas = new HashSet<CommandHandlerSchema>();
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="Command" /> class with the specified command manager, name,
-        ///     description and handler.
-        /// </summary>
-        /// <param name="commandManager">The <see cref="Remus.CommandManager" /> associated with this command.</param>
-        /// <param name="name">The name.</param>
-        internal Command([NotNull] CommandManager commandManager, [NotNull] string name)
+        internal Command([NotNull] ICommandService commandService, [NotNull] string name)
         {
-            CommandManager = commandManager ?? throw new ArgumentNullException(nameof(commandManager));
+            CommandService = commandService ?? throw new ArgumentNullException(nameof(commandService));
             Name = name ?? throw new ArgumentNullException(nameof(name));
         }
 
@@ -44,7 +39,7 @@ namespace Remus
                 return true;
             }
 
-            return CommandManager.Equals(other.CommandManager) && Name == other.Name;
+            return CommandService.Equals(other.CommandService) && Name == other.Name;
         }
 
         /// <summary>
@@ -66,7 +61,7 @@ namespace Remus
         /// </summary>
         /// <param name="sender">The command sender, which must not be <see langword="null" />.</param>
         /// <param name="inputData">The input metadata, which must not be <see langword="null" />.</param>
-        internal void Run(ICommandSender sender, InputMetadata inputData)
+        internal void Run(ICommandSender sender, IArgumentParser inputData)
         {
             if (sender is null)
             {
@@ -108,7 +103,7 @@ namespace Remus
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(CommandManager, Name);
+            return HashCode.Combine(CommandService, Name);
         }
     }
 }

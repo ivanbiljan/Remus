@@ -6,6 +6,7 @@ using JetBrains.Annotations;
 using Remus.Attributes;
 using Remus.Exceptions;
 using Remus.Extensions;
+using Remus.Parsing.Arguments;
 using Remus.Parsing.TypeParsers;
 
 namespace Remus
@@ -19,7 +20,7 @@ namespace Remus
         public static CommandHandlerSchema? ResolveMethodCall(
             [NotNull] Command command,
             [NotNull] ICommandSender commandSender,
-            [NotNull] InputMetadata inputMetadata,
+            [NotNull] IArgumentParser inputMetadata,
             out object?[] arguments)
         {
             if (command is null)
@@ -47,7 +48,7 @@ namespace Remus
                 var schema = commandHandlerSchemas[i];
                 var handler = schema.Callback;
                 var parameters = handler.GetParameters();
-                if (parameters.Length == 0 && inputMetadata.RequiredArguments.Count == 0 &&
+                if (parameters.Length == 0 && inputMetadata.Arguments.Count == 0 &&
                     inputMetadata.Options.Count == 0)
                 {
                     return schema;
@@ -76,7 +77,7 @@ namespace Remus
             [NotNull] ParameterInfo[] parameters,
             [NotNull] Parsers parsers,
             [NotNull] ICommandSender commandSender,
-            [NotNull] InputMetadata inputMetadata,
+            [NotNull] IArgumentParser inputMetadata,
             out object?[] arguments)
         {
             arguments = new object?[parameters.Length];
@@ -95,7 +96,7 @@ namespace Remus
                 throw new ArgumentNullException(nameof(inputMetadata));
             }
 
-            if (parameters.Length < inputMetadata.RequiredArguments.Count)
+            if (parameters.Length < inputMetadata.Arguments.Count)
             {
                 return -1;
             }
@@ -142,12 +143,12 @@ namespace Remus
                 else
                 {
                     // TODO: write an analyzer to enforce [OptionalArgumentAttribute] on optional parameters
-                    if (argumentIndex >= inputMetadata.RequiredArguments.Count)
+                    if (argumentIndex >= inputMetadata.Arguments.Count)
                     {
                         return -1;
                     }
 
-                    arguments[i] = parser.Parse(inputMetadata.RequiredArguments[argumentIndex++]);
+                    arguments[i] = parser.Parse(inputMetadata.Arguments[argumentIndex++]);
                     ++explicitParameterCount;
                 }
             }
