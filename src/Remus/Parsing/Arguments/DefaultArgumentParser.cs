@@ -6,14 +6,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Remus.Parsing.Arguments {
+namespace Remus.Parsing.Arguments
+{
     /// <summary>
     /// Represents the default argument parser. Aims to replicate nix style option parsing and uses whitespace as argument separators.
     /// </summary>
     internal sealed class DefaultArgumentParser : IArgumentParser
     {
         /// <inheritdoc />
-        public string Separator { get; } = " ";
+        public char[] Separators { get; } = {' ', '\t', '\n'};
 
         /// <inheritdoc />
         public string? CommandName { get; private set; }
@@ -28,12 +29,22 @@ namespace Remus.Parsing.Arguments {
         public IReadOnlyDictionary<string, string?> Options { get; private set; } = new Dictionary<string, string?>();
 
         /// <inheritdoc />
-        public void Parse(string input, IReadOnlyCollection<string> availableCommandNames) {
-            if (string.IsNullOrWhiteSpace(input)) {
+        public void Parse(string input, IReadOnlyCollection<string> availableCommandNames)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+            {
                 throw new ArgumentException("Input must not be null or empty.", nameof(input));
             }
 
-            Debug.Assert(input.Length <= 1024);
+            if (availableCommandNames is null)
+            {
+                throw new ArgumentNullException(nameof(availableCommandNames));
+            }
+
+            if (availableCommandNames.Count == 0)
+            {
+                return;
+            }
 
             var index = 0;
             var tokens = TokenizeInput(input);
@@ -45,16 +56,19 @@ namespace Remus.Parsing.Arguments {
         private static string? ParseCommandName(
             IReadOnlyCollection<string> availableCommandNames,
             IReadOnlyList<string> tokens,
-            ref int index) {
+            ref int index)
+        {
             // This performs a greedy match
             Debug.Assert(tokens.Count > 0);
 
             var commandName = default(string);
             var i = 1;
             var builder = new StringBuilder(tokens[0]);
-            do {
+            do
+            {
                 var tempCommand = builder.ToString();
-                if (!availableCommandNames.Contains(tempCommand)) {
+                if (!availableCommandNames.Contains(tempCommand))
+                {
                     break;
                 }
 
@@ -68,14 +82,18 @@ namespace Remus.Parsing.Arguments {
 
         private static Dictionary<string, string?> ParseOptionals(
             IReadOnlyList<string> tokens,
-            ref int index) {
+            ref int index)
+        {
             var currentOption = default(string);
             var options = new Dictionary<string, string?>();
-            for (var i = index; i < tokens.Count; ++i) {
+            for (var i = index; i < tokens.Count; ++i)
+            {
                 var token = tokens[index];
-                if (!token.StartsWith("-")) {
+                if (!token.StartsWith("-"))
+                {
                     // No options left to consume
-                    if (currentOption == default) {
+                    if (currentOption == default)
+                    {
                         break;
                     }
 
@@ -85,17 +103,21 @@ namespace Remus.Parsing.Arguments {
                     continue;
                 }
 
-                if (currentOption != default) {
+                if (currentOption != default)
+                {
                     options[currentOption] = default;
                 }
 
-                if (!token.StartsWith("--")) {
+                if (!token.StartsWith("--"))
+                {
                     currentOption = token[1].ToString();
                 }
-                else {
+                else
+                {
                     currentOption = token[2..];
                     var indexOfEquals = currentOption.IndexOf('=');
-                    if (indexOfEquals > 0) {
+                    if (indexOfEquals > 0)
+                    {
                         options[currentOption[..indexOfEquals]] = currentOption[(indexOfEquals + 1)..];
                         currentOption = default;
                     }
@@ -107,10 +129,13 @@ namespace Remus.Parsing.Arguments {
             return options;
         }
 
-        private static List<string> ParseArguments(IReadOnlyList<string> tokens, ref int index) {
+        private static List<string> ParseArguments(IReadOnlyList<string> tokens, ref int index)
+        {
             var arguments = new List<string>();
-            for (; index < tokens.Count; ++index) {
-                if (tokens[index][0] == '-') {
+            for (; index < tokens.Count; ++index)
+            {
+                if (tokens[index][0] == '-')
+                {
                     break;
                 }
 
@@ -125,15 +150,20 @@ namespace Remus.Parsing.Arguments {
         /// </summary>
         /// <param name="input">The input string.</param>
         /// <returns>A read-only list of tokens (arguments) extracted from the input string.</returns>
-        private static IReadOnlyList<string> TokenizeInput(string input) {
+        private IReadOnlyList<string> TokenizeInput(string input)
+        {
             var parameters = new List<string>();
             var stringBuilder = new StringBuilder(input.Length);
             var inQuotes = false;
             var isEscaped = false;
-            foreach (var currentCharacter in input) {
-                switch (currentCharacter) {
+            foreach (var currentCharacter in input)
+            {
+                switch (currentCharacter)
+                {
                     case '\\':
-                        if (isEscaped) {
+                    {
+                        if (isEscaped)
+                        {
                             stringBuilder.Append(currentCharacter);
                             isEscaped = false;
                             continue;
@@ -141,51 +171,63 @@ namespace Remus.Parsing.Arguments {
 
                         isEscaped = true;
                         break;
-                    case ' ':
-                    case '\t':
-                    case '\n': {
-                            if (inQuotes || isEscaped) {
+                    }
+
+                    case '"':
+                    {
+                        if (isEscaped)
+                        {
+                            stringBuilder.Append(currentCharacter);
+                            isEscaped = false;
+                            continue;
+                        }
+
+                        inQuotes = !inQuotes;
+                        if (inQuotes)
+                        {
+                            continue;
+                        }
+
+                        CommitPendingArgument();
+                        break;
+                    }
+
+                    default:
+                    {
+                        if (!Separators.Contains(currentCharacter))
+                        {
+                            stringBuilder.Append(currentCharacter);
+                        }
+                        else
+                        {
+                            if (inQuotes || isEscaped)
+                            {
                                 stringBuilder.Append(currentCharacter);
                                 isEscaped = false;
                             }
-                            else {
-                                if (stringBuilder.Length == 0) {
+                            else
+                            {
+                                if (stringBuilder.Length == 0)
+                                {
                                     continue;
                                 }
 
                                 CommitPendingArgument();
                             }
-
-                            break;
                         }
 
-                    case '"': {
-                            if (isEscaped) {
-                                stringBuilder.Append(currentCharacter);
-                                isEscaped = false;
-                                continue;
-                            }
-
-                            inQuotes = !inQuotes;
-                            if (inQuotes) {
-                                continue;
-                            }
-
-                            CommitPendingArgument();
-                            break;
-                        }
-
-                    default:
-                        stringBuilder.Append(currentCharacter);
                         break;
+                    }
                 }
             }
 
             CommitPendingArgument();
             return parameters;
 
-            void CommitPendingArgument() {
-                if (stringBuilder.Length == 0) {
+            void CommitPendingArgument()
+            {
+                if (stringBuilder.Length == 0)
+                {
                     return;
                 }
 

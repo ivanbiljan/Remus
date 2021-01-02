@@ -7,7 +7,7 @@ namespace Remus.Parsing.TypeParsers
     /// <summary>
     ///     Represents a collection of parsers.
     /// </summary>
-    public sealed class Parsers : IParserCollection
+    public sealed class Parsers : ITypeParserCollection
     {
         private static readonly IDictionary<Type, ITypeParser> PrimitiveParsers = new Dictionary<Type, ITypeParser>
         {

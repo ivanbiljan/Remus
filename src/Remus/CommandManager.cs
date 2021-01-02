@@ -25,21 +25,21 @@ namespace Remus
             _objectsToCommands = new Dictionary<object, List<Command>>();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CommandManager"/> class with the specified <see cref="IArgumentParser"/> and <see cref="IParserCollection"/>.
+        /// Initializes a new instance of the <see cref="CommandManager"/> class with the specified <see cref="IArgumentParser"/> and <see cref="ITypeParserCollection"/>.
         /// </summary>
         /// <param name="argumentParser">The <see cref="IArgumentParser"/> instance, which must not be <see langword="null"/>.</param>
-        /// <param name="parsers">The <see cref="IParserCollection"/> instance, which must not be <see langword="null"/>.</param>
-        public CommandManager([NotNull] IArgumentParser argumentParser, [NotNull] IParserCollection parsers)
+        /// <param name="parsers">The <see cref="ITypeParserCollection"/> instance, which must not be <see langword="null"/>.</param>
+        public CommandManager([NotNull] IArgumentParser argumentParser, [NotNull] ITypeParserCollection parsers)
         {
             ArgumentParser = argumentParser ?? throw new ArgumentNullException(nameof(argumentParser));
-            Parsers = parsers ?? throw new ArgumentNullException(nameof(parsers));
+            TypeParsers = parsers ?? throw new ArgumentNullException(nameof(parsers));
         }
 
         /// <inheritdoc />
         public IArgumentParser ArgumentParser { get; }
 
         /// <inheritdoc />
-        public IParserCollection Parsers { get; }
+        public ITypeParserCollection TypeParsers { get; }
 
         /// <inheritdoc />
         public void Register(object obj)
@@ -57,6 +57,8 @@ namespace Remus
             {
                 throw new ArgumentNullException(nameof(obj));
             }
+
+            _objectsToCommands.Remove(obj);
         }
 
         /// <inheritdoc />

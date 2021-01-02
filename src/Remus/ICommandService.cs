@@ -22,7 +22,7 @@ namespace Remus {
         /// <summary>
         /// Gets the parser collection for this command service.
         /// </summary>
-        IParserCollection Parsers { get; }
+        ITypeParserCollection TypeParsers { get; }
         
         /// <summary>
         /// Registers commands defined by the specified object.

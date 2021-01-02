@@ -9,7 +9,7 @@ namespace Remus.Parsing.TypeParsers {
     /// <summary>
     /// Defines a contract for a parser manager.
     /// </summary>
-    public interface IParserCollection
+    public interface ITypeParserCollection
     {
         /// <summary>
         /// Adds a type parser.

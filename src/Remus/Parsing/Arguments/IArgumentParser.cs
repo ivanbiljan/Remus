@@ -11,11 +11,12 @@ namespace Remus.Parsing.Arguments {
     /// </summary>
     [PublicAPI]
     public interface IArgumentParser {
-        /// <summary>
-        /// Gets the separator.
-        /// </summary>
-        string Separator { get; }
         
+        /// <summary>
+        /// Gets an array of separators.
+        /// </summary>
+        char[] Separators { get; }
+
         /// <summary>
         /// Gets the command name.
         /// </summary>
