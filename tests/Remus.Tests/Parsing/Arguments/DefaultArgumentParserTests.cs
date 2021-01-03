@@ -23,7 +23,7 @@ namespace Remus.Tests.Parsing.Arguments {
         {
             var argumentParser = new DefaultArgumentParser();
 
-            Assert.Throws<ArgumentException>(() => argumentParser.Parse("test", null!));
+            Assert.Throws<ArgumentNullException>(() => argumentParser.Parse("test", null!));
         }
 
         [Fact]
