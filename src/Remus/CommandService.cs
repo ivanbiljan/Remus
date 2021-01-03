@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using JetBrains.Annotations;
+using Microsoft.Extensions.Logging;
 using Remus.Attributes;
 using Remus.Exceptions;
 using Remus.Extensions;
@@ -21,16 +22,19 @@ namespace Remus
         private const BindingFlags HandlerBindingFlags =
             BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance;
 
+        private readonly ILogger _logger;
         private readonly IDictionary<object, List<Command>>
             _objectsToCommands = new Dictionary<object, List<Command>>();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CommandService"/> class with the specified <see cref="IArgumentParser"/> and <see cref="ITypeParserCollection"/>.
+        /// Initializes a new instance of the <see cref="CommandService"/> class with the specified <see cref="ILogger"/>, <see cref="IArgumentParser"/> and <see cref="ITypeParserCollection"/>.
         /// </summary>
+        /// <param name="logger">The <see cref="ILogger"/> instance, which must not be <see langword="null"/>.</param>
         /// <param name="argumentParser">The <see cref="IArgumentParser"/> instance, which must not be <see langword="null"/>.</param>
         /// <param name="parsers">The <see cref="ITypeParserCollection"/> instance, which must not be <see langword="null"/>.</param>
-        public CommandService([NotNull] IArgumentParser argumentParser, [NotNull] ITypeParserCollection parsers)
+        public CommandService([NotNull] ILogger logger, [NotNull] IArgumentParser argumentParser, [NotNull] ITypeParserCollection parsers)
         {
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             ArgumentParser = argumentParser ?? throw new ArgumentNullException(nameof(argumentParser));
             TypeParsers = parsers ?? throw new ArgumentNullException(nameof(parsers));
         }
@@ -60,15 +64,17 @@ namespace Remus
                 }
 
                 if (_objectsToCommands.Any(kvp =>
-                    kvp.Value.Contains(new Command(this, commandHandlerAttribute.Name)) && kvp.Key != obj))
+                    kvp.Value.Contains(new Command(_logger, this, commandHandlerAttribute.Name)) && kvp.Key != obj))
                 {
+                    _logger.LogWarning(
+                        $"Command {commandHandlerAttribute.Name} is already defined by a different object and was skipped.");
                     continue;
                 }
 
                 var commandHandlerSchema = new CommandHandlerSchema(commandHandlerAttribute, method, obj);
                 var command = commandsForObject.FirstOrDefault(c => c.Name == commandHandlerAttribute.Name);
                 if (command is null) {
-                    command = new Command(this, commandHandlerAttribute.Name);
+                    command = new Command(_logger, this, commandHandlerAttribute.Name);
                     commandsForObject.Add(command);
                 }
 

@@ -5,8 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Remus.Parsing.Arguments;
 using Remus.Parsing.TypeParsers;
+using Serilog;
 
 namespace Remus.Extensions {
     /// <summary>
@@ -15,19 +17,26 @@ namespace Remus.Extensions {
     [PublicAPI]
     public static class IServiceCollectionExtensions {
         /// <summary>
-        /// Configures Remus' service bindings.
+        /// Adds Remus' services to the specified <see cref="IServiceCollection"/>.
         /// </summary>
         /// <param name="serviceCollection">The service provider, which must not be <see langword="null"/>.</param>
-        public static void AddCommandServices([NotNull] this IServiceCollection serviceCollection)
+        /// <returns>The modified <see cref="IServiceCollection"/>.</returns>
+        public static IServiceCollection AddRemus([NotNull] this IServiceCollection serviceCollection)
         {
             if (serviceCollection is null)
             {
                 throw new ArgumentNullException(nameof(serviceCollection));
             }
 
+            if (!serviceCollection.Any(sd => sd.ServiceType == typeof(ILoggerProvider)))
+            {
+                serviceCollection.AddLogging(logBuilder => logBuilder.AddSerilog());
+            }
+
             serviceCollection.AddSingleton<IArgumentParser, DefaultArgumentParser>();
             serviceCollection.AddSingleton<ITypeParserCollection, Parsers>();
             serviceCollection.AddSingleton<ICommandService, CommandService>();
+            return serviceCollection;
         }
     }
 }

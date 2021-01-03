@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using JetBrains.Annotations;
+using Microsoft.Extensions.Logging;
 using Remus.Exceptions;
 using Remus.Parsing.Arguments;
 
@@ -13,11 +14,14 @@ namespace Remus
     [PublicAPI]
     public sealed class Command : IEquatable<Command>
     {
+        private readonly ILogger _logger;
+        
         internal readonly ICommandService CommandService;
         internal readonly ISet<CommandHandlerSchema> HandlerSchemas = new HashSet<CommandHandlerSchema>();
 
-        internal Command([NotNull] ICommandService commandService, [NotNull] string name)
+        internal Command([NotNull] ILogger logger, [NotNull] ICommandService commandService, [NotNull] string name)
         {
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             CommandService = commandService ?? throw new ArgumentNullException(nameof(commandService));
             Name = name ?? throw new ArgumentNullException(nameof(name));
         }
@@ -87,6 +91,7 @@ namespace Remus
             }
             catch (TargetInvocationException ex)
             {
+                _logger.LogError($"Something went wrong while executing command '{Name}':\n{ex}");
             }
         }
 
