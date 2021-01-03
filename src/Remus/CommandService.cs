@@ -48,6 +48,34 @@ namespace Remus
             {
                 throw new ArgumentNullException(nameof(obj));
             }
+
+            var commandsForObject = _objectsToCommands.GetValueOrDefault(obj, new List<Command>())!;
+            var methods = obj.GetType().GetMethods(HandlerBindingFlags);
+            foreach (var method in methods)
+            {
+                var commandHandlerAttribute = method.GetCustomAttribute<CommandHandlerAttribute>();
+                if (commandHandlerAttribute is null)
+                {
+                    continue;
+                }
+
+                if (_objectsToCommands.Any(kvp =>
+                    kvp.Value.Contains(new Command(this, commandHandlerAttribute.Name)) && kvp.Key != obj))
+                {
+                    continue;
+                }
+
+                var commandHandlerSchema = new CommandHandlerSchema(commandHandlerAttribute, method, obj);
+                var command = commandsForObject.FirstOrDefault(c => c.Name == commandHandlerAttribute.Name);
+                if (command is null) {
+                    command = new Command(this, commandHandlerAttribute.Name);
+                    commandsForObject.Add(command);
+                }
+
+                command.HandlerSchemas.Add(commandHandlerSchema);
+            }
+
+            _objectsToCommands[obj] = commandsForObject;
         }
 
         /// <inheritdoc />

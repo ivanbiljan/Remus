@@ -27,6 +27,7 @@ namespace Remus
         /// </summary>
         public string Name { get; }
 
+        /// <inheritdoc />
         public bool Equals(Command? other)
         {
             if (ReferenceEquals(null, other))
@@ -45,7 +46,7 @@ namespace Remus
         /// <summary>
         ///     Registers a new command handler for this command.
         /// </summary>
-        /// <param name="commandHandlerSchema">The command handler schema.</param>
+        /// <param name="commandHandlerSchema">The command handler schema, which must not be <see langword="null"/>.</param>
         internal void RegisterHandler([NotNull] CommandHandlerSchema commandHandlerSchema)
         {
             if (commandHandlerSchema is null)
@@ -61,7 +62,7 @@ namespace Remus
         /// </summary>
         /// <param name="sender">The command sender, which must not be <see langword="null" />.</param>
         /// <param name="inputData">The input metadata, which must not be <see langword="null" />.</param>
-        internal void Run(ICommandSender sender, IArgumentParser inputData)
+        internal void Run([NotNull] ICommandSender sender, [NotNull] IArgumentParser inputData)
         {
             if (sender is null)
             {
@@ -76,7 +77,6 @@ namespace Remus
             var handlerSchema = Binder.ResolveMethodCall(this, sender, inputData, out var args);
             if (handlerSchema is null)
             {
-                // TODO
                 return;
             }
 
@@ -101,6 +101,7 @@ namespace Remus
             return ReferenceEquals(this, obj) || obj is Command other && Equals(other);
         }
 
+        /// <inheritdoc />
         public override int GetHashCode()
         {
             return HashCode.Combine(CommandService, Name);
