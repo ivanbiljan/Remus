@@ -107,8 +107,11 @@ namespace Remus
             {
                 throw new ArgumentNullException(nameof(sender));
             }
-            
-            throw new NotImplementedException();
+
+            ArgumentParser.Parse(input, _objectsToCommands.Values.SelectMany(c => c.Select(c => c.Name)).ToList());
+            if (string.IsNullOrWhiteSpace(ArgumentParser.CommandName))
+            {
+            }
         }
     }
 }

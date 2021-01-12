@@ -56,14 +56,14 @@ namespace Remus
 
                 try
                 {
-                    //var score = EvaluateMethodScore(parameters, command.CommandManager.Parsers, commandSender,
-                    //    inputMetadata, out var args);
-                    //if (score > bestScore)
-                    //{
-                    //    result = schema;
-                    //    arguments = args;
-                    //    bestScore = score;
-                    //}
+                    var score = EvaluateMethodScore(parameters, commandSender, command.CommandService.TypeParsers,
+                        inputMetadata, out var args);
+                    if (score > bestScore)
+                    {
+                        result = schema;
+                        arguments = args;
+                        bestScore = score;
+                    }
                 }
                 catch (TypeParserException)
                 {
@@ -75,8 +75,8 @@ namespace Remus
 
         private static double EvaluateMethodScore(
             [NotNull] ParameterInfo[] parameters,
-            [NotNull] Parsers parsers,
             [NotNull] ICommandSender commandSender,
+            [NotNull] ITypeParserCollection parsers,
             [NotNull] IArgumentParser inputMetadata,
             out object?[] arguments)
         {
@@ -124,7 +124,9 @@ namespace Remus
                     continue;
                 }
 
-                var parser = parsers.GetParser(parameter.ParameterType);
+                var parserType = parameter.GetCustomAttribute<CommandArgParserAttribute>()?.ParserType ??
+                                 parameter.ParameterType;
+                var parser = parsers.GetParser(parserType);
                 if (parser is null)
                 {
                     throw new TypeParserException($"Missing type parser for type '{parameter.ParameterType}'");
