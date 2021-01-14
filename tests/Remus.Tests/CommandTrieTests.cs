@@ -50,7 +50,8 @@ namespace Remus.Tests {
             var trie = new CommandTrie();
             var mockLogger = new Mock<ILogger>();
             var mockCommandService = new Mock<ICommandService>();
-            trie.AddCommand(new Command(mockLogger.Object, mockCommandService.Object, "test"));
+            var command = new Command(mockLogger.Object, mockCommandService.Object, "test");
+            trie.AddCommand(command);
 
             var suggestions = trie.GetCommandSuggestions("tst");
 
