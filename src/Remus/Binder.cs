@@ -101,7 +101,7 @@ namespace Remus
                 return -1;
             }
 
-            const double StringParameterCost = 0.01;
+            const double stringParameterCost = 0.01;
 
             var explicitParameterCount = 0;
             var implicitParameterCount = 0;
@@ -156,7 +156,7 @@ namespace Remus
             }
 
             return explicitParameterCount == parameters.Length - implicitParameterCount
-                ? (double) explicitParameterCount / parameters.Length - stringParameterCount * StringParameterCost
+                ? (double) explicitParameterCount / parameters.Length - stringParameterCount * stringParameterCost
                 : -1;
         }
     }
