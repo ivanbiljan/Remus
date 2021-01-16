@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Remus.Exceptions;
 using Remus.Parsing.Arguments;
@@ -53,6 +54,40 @@ namespace Remus.Tests
             Assert.Equal(new[] {"test", "test2"}, commandService.GetCommands().Select(c => c.Name));
         }
 
+        [Fact]
+        public void Evaluate_NullInput_ThrowsArgumentNullException()
+        {
+            var commandService = new CommandService(new Mock<ILogger>().Object, new Mock<IArgumentParser>().Object,
+                new Mock<ITypeParserCollection>().Object);
+
+            Assert.Throws<ArgumentNullException>(
+                () => commandService.Evaluate(null!, new Mock<ICommandSender>().Object));
+        }
+
+        [Fact]
+        public void Evaluate_NullSender_ThrowsArgumentNullException() 
+        {
+            var commandService = new CommandService(new Mock<ILogger>().Object, new Mock<IArgumentParser>().Object,
+                new Mock<ITypeParserCollection>().Object);
+
+            Assert.Throws<ArgumentNullException>(() => commandService.Evaluate("test", null!));
+        }
+
+        [Fact]
+        public void Evaluate_InvalidCommand_IsLogged()
+        {
+            var logger = new Mock<ILogger>();
+            var argumentParser = new Mock<IArgumentParser>();
+            var typeParsers = new Mock<ITypeParserCollection>();
+            var commandService = new CommandService(logger.Object, argumentParser.Object, typeParsers.Object);
+            
+            commandService.Register(new TestCommandRegistry());
+            commandService.Evaluate("command", new Mock<ICommandSender>().Object);
+
+            logger.Verify(l => l.Log(LogLevel.Information, It.IsAny<EventId>(), It.Is<It.IsAnyType>((v, t) => true),
+                It.IsAny<Exception>(), It.IsAny<Func<object, Exception, string>>()), () => Times.Exactly(1));
+        }
+
         //[Fact]
         //public void Evaluate_IsCorrect()
         //{
@@ -69,7 +104,7 @@ namespace Remus.Tests
 
         //    commandManager.Evaluate(sender, "test -x 200");
         //    Assert.Equal(0, commandRegistry.Number);
-            
+
         //    commandManager.Evaluate(sender, "test2 123 true 123");
         //    Assert.Equal(123, commandRegistry.Number);
         //    Assert.True(commandRegistry.Boolean);
