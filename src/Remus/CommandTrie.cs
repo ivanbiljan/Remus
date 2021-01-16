@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Linq;
 using JetBrains.Annotations;
+using Microsoft.VisualBasic;
 
 namespace Remus
 {
@@ -12,6 +15,12 @@ namespace Remus
     {
         private readonly IDictionary<string, Command> _commandMap = new Dictionary<string, Command>();
         private readonly TrieNode _root = new TrieNode('\0');
+
+        /// <summary>
+        /// Gets an enumerable collection of commands.
+        /// </summary>
+        [ItemNotNull]
+        public IEnumerable<Command> Commands => _commandMap.Values;
 
         /// <summary>
         /// Adds a command to the trie.
@@ -64,10 +73,10 @@ namespace Remus
         }
 
         /// <summary>
-        /// Gets a list of commands
+        /// Gets a list of commands that match the given prefix.
         /// </summary>
-        /// <param name="searchQuery"></param>
-        /// <returns></returns>
+        /// <param name="searchQuery">The prefix to search for.</param>
+        /// <returns>A list of commands that match the given prefix.</returns>
         public IList<Command> GetCommandSuggestions([NotNull] string searchQuery)
         {
             var commands = new List<Command>();
@@ -101,7 +110,7 @@ namespace Remus
             {
                 if (node.IsFullWord)
                 {
-                    Debug.Assert(_commandMap.ContainsKey(node.Word!));
+                    Debug.Assert(_commandMap.ContainsKey(node.Word!), "_commandMap.ContainsKey(node.Word!)");
                     commands.Add(_commandMap[node.Word!]);
                 }
 
@@ -109,6 +118,58 @@ namespace Remus
                 {
                     RecurseSubtree(childNode);
                 }
+            }
+        }
+
+        /// <summary>
+        /// Removes a command with the specified name.
+        /// </summary>
+        /// <param name="name">The name, which must not be <see langword="null"/>.</param>
+        public void RemoveCommand([NotNull] string name)
+        {
+            if (name is null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            var currentNode = _root;
+            RemoveHelper(currentNode, 0);
+
+            TrieNode? RemoveHelper(TrieNode? node, int currentCharacterIndex)
+            {
+                if (node is null)
+                {
+                    return null;
+                }
+
+                if (!node.Children.TryGetValue(name[currentCharacterIndex], out var childNode)) 
+                {
+                    return node;
+                }
+
+                if (currentCharacterIndex == name.Length - 1)
+                {
+                    if (childNode.IsFullWord)
+                    {
+                        _commandMap.Remove(childNode.Word!);
+                        childNode.Word = null;
+                    }
+
+                    if (childNode.Children.Count == 0)
+                    {
+                        childNode = null;
+                    }
+                }
+                else
+                {
+                    childNode = RemoveHelper(childNode, currentCharacterIndex + 1);
+                    if (childNode is null)
+                    {
+                        node.Children.Remove(name[currentCharacterIndex]);
+                    }
+                }
+
+                return node;
             }
         }
     }

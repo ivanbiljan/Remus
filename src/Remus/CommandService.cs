@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using Remus.Attributes;
@@ -22,9 +23,8 @@ namespace Remus
         private const BindingFlags HandlerBindingFlags =
             BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance;
 
+        private readonly CommandTrie _commandTrie = new CommandTrie();
         private readonly ILogger _logger;
-        private readonly IDictionary<object, List<Command>>
-            _objectsToCommands = new Dictionary<object, List<Command>>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CommandService"/> class with the specified <see cref="ILogger"/>, <see cref="IArgumentParser"/> and <see cref="ITypeParserCollection"/>.
@@ -53,7 +53,7 @@ namespace Remus
                 throw new ArgumentNullException(nameof(obj));
             }
 
-            var commandsForObject = _objectsToCommands.GetValueOrDefault(obj, new List<Command>())!;
+            var commands = _commandTrie.Commands.ToList();
             var methods = obj.GetType().GetMethods(HandlerBindingFlags);
             foreach (var method in methods)
             {
@@ -63,25 +63,22 @@ namespace Remus
                     continue;
                 }
 
-                if (_objectsToCommands.Any(kvp =>
-                    kvp.Value.Contains(new Command(_logger, this, commandHandlerAttribute.Name)) && kvp.Key != obj))
+                var command = commands.FirstOrDefault(c => c.Name == commandHandlerAttribute.Name);
+                if (command != null && command.HandlerObject != obj)
                 {
-                    _logger.LogWarning(
-                        $"Command {commandHandlerAttribute.Name} is already defined by a different object and was skipped.");
+                    _logger.LogWarning($"Command '{commandHandlerAttribute.Name}' is already defined by a different object and was skipped.");
                     continue;
                 }
 
                 var commandHandlerSchema = new CommandHandlerSchema(commandHandlerAttribute, method, obj);
-                var command = commandsForObject.FirstOrDefault(c => c.Name == commandHandlerAttribute.Name);
-                if (command is null) {
-                    command = new Command(_logger, this, commandHandlerAttribute.Name);
-                    commandsForObject.Add(command);
+                if (command is null)
+                {
+                    command = new Command(_logger, this, commandHandlerAttribute.Name, obj);
+                    _commandTrie.AddCommand(command);
                 }
 
-                command.HandlerSchemas.Add(commandHandlerSchema);
+                command.RegisterHandler(commandHandlerSchema);
             }
-
-            _objectsToCommands[obj] = commandsForObject;
         }
 
         /// <inheritdoc />
@@ -92,8 +89,16 @@ namespace Remus
                 throw new ArgumentNullException(nameof(obj));
             }
 
-            _objectsToCommands.Remove(obj);
+            var commands = _commandTrie.Commands.ToList();
+            for (var i = 0; i < commands.Count; ++i)
+            {
+                _commandTrie.RemoveCommand(commands[i].Name);
+            }
         }
+
+        /// <inheritdoc />
+        public IEnumerable<Command> GetCommands(Predicate<Command>? predicate = null) =>
+            _commandTrie.Commands.Where(c => predicate?.Invoke(c) ?? true);
 
         /// <inheritdoc />
         public void Evaluate(string input, ICommandSender sender)
@@ -108,9 +113,11 @@ namespace Remus
                 throw new ArgumentNullException(nameof(sender));
             }
 
-            ArgumentParser.Parse(input, _objectsToCommands.Values.SelectMany(c => c.Select(c => c.Name)).ToList());
+            ArgumentParser.Parse(input, _commandTrie.Commands.Select(c => c.Name).ToList());
             if (string.IsNullOrWhiteSpace(ArgumentParser.CommandName))
             {
+                _logger.LogInformation("Invalid command.");
+                return;
             }
         }
     }

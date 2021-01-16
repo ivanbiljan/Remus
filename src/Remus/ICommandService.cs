@@ -37,6 +37,13 @@ namespace Remus {
         void Deregister([NotNull] object obj);
 
         /// <summary>
+        /// Returns an enumerable collection of commands that match the given predicate.
+        /// </summary>
+        /// <param name="predicate">The predicate, which must not be <see langword="null"/>.</param>
+        /// <returns>An enumerable collection of commands that match the given predicate.</returns>
+        IEnumerable<Command> GetCommands(Predicate<Command>? predicate = null);
+
+        /// <summary>
         /// Evaluates the given input string using the specified command sender.
         /// </summary>
         /// <param name="input">The input string, which must not be <see langword="null"/>.</param>

@@ -17,13 +17,15 @@ namespace Remus
         private readonly ILogger _logger;
         
         internal readonly ICommandService CommandService;
+        internal readonly object? HandlerObject;
         internal readonly ISet<CommandHandlerSchema> HandlerSchemas = new HashSet<CommandHandlerSchema>();
 
-        internal Command([NotNull] ILogger logger, [NotNull] ICommandService commandService, [NotNull] string name)
+        internal Command([NotNull] ILogger logger, [NotNull] ICommandService commandService, [NotNull] string name, object handlerObject = null)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             CommandService = commandService ?? throw new ArgumentNullException(nameof(commandService));
             Name = name ?? throw new ArgumentNullException(nameof(name));
+            HandlerObject = handlerObject;
         }
 
         /// <summary>
