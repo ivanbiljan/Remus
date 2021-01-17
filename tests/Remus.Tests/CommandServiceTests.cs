@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -55,6 +56,33 @@ namespace Remus.Tests
         }
 
         [Fact]
+        public void Deregister_NullObject_ThrowsArgumentNullException()
+        {
+            var logger = new Mock<ILogger>();
+            var argumentParser = new Mock<IArgumentParser>();
+            var typeParsers = new Mock<ITypeParserCollection>();
+            var commandService = new CommandService(logger.Object, argumentParser.Object, typeParsers.Object);
+
+            Assert.Throws<ArgumentNullException>(() => commandService.Deregister(null!));
+        }
+
+        [Fact]
+        public void Deregister_IsCorrect()
+        {
+            var logger = new Mock<ILogger>();
+            var argumentParser = new Mock<IArgumentParser>();
+            var typeParsers = new Mock<ITypeParserCollection>();
+            var commandRegistry = new TestCommandRegistry();
+            var commandService = new CommandService(logger.Object, argumentParser.Object, typeParsers.Object);
+
+            commandService.Register(commandRegistry);
+            Assert.NotEmpty(commandService.GetCommands());
+
+            commandService.Deregister(commandRegistry);
+            Assert.Empty(commandService.GetCommands());
+        }
+
+        [Fact]
         public void Evaluate_NullInput_ThrowsArgumentNullException()
         {
             var commandService = new CommandService(new Mock<ILogger>().Object, new Mock<IArgumentParser>().Object,
@@ -86,6 +114,65 @@ namespace Remus.Tests
 
             logger.Verify(l => l.Log(LogLevel.Information, It.IsAny<EventId>(), It.Is<It.IsAnyType>((v, t) => true),
                 It.IsAny<Exception>(), It.IsAny<Func<object, Exception, string>>()), () => Times.Exactly(1));
+        }
+
+        [Fact]
+        public void Evaluate_IsCorrect()
+        {
+            var logger = new Mock<ILogger>();
+            var argumentParser = new Mock<IArgumentParser>();
+            var typeParsers = new Mock<ITypeParserCollection>();
+            var commandService = new CommandService(logger.Object, argumentParser.Object, typeParsers.Object);
+        }
+
+        [Fact]
+        public void GetCommands_NoCommands_ReturnsEmptyCollection()
+        {
+            var logger = new Mock<ILogger>();
+            var argumentParser = new Mock<IArgumentParser>();
+            var typeParsers = new Mock<ITypeParserCollection>();
+            var commandService = new CommandService(logger.Object, argumentParser.Object, typeParsers.Object);
+
+            Assert.Empty(commandService.GetCommands());
+        }
+
+        [Fact]
+        public void GetCommands_NullPredicate_ReturnsAllCommands()
+        {
+            var logger = new Mock<ILogger>();
+            var argumentParser = new Mock<IArgumentParser>();
+            var typeParsers = new Mock<ITypeParserCollection>();
+            var commandRegistry = new TestCommandRegistry();
+            var commandService = new CommandService(logger.Object, argumentParser.Object, typeParsers.Object);
+
+            commandService.Register(commandRegistry);
+
+            var expected = new List<Command>
+            {
+                new Command(logger.Object, commandService, "test", commandRegistry),
+                new Command(logger.Object, commandService, "test2", commandRegistry)
+            };
+
+            Assert.Equal(expected, commandService.GetCommands());
+        }
+
+        [Fact]
+        public void GetCommands_CustomPredicate_IsCorrect()
+        {
+            var logger = new Mock<ILogger>();
+            var argumentParser = new Mock<IArgumentParser>();
+            var typeParsers = new Mock<ITypeParserCollection>();
+            var commandRegistry = new TestCommandRegistry();
+            var commandService = new CommandService(logger.Object, argumentParser.Object, typeParsers.Object);
+
+            commandService.Register(commandRegistry);
+
+            var expected = new List<Command>
+            {
+                new Command(logger.Object, commandService, "test2", commandRegistry)
+            };
+
+            Assert.Equal(expected, commandService.GetCommands(c => c.Name == "test2"));
         }
 
         //[Fact]
