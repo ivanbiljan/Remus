@@ -119,6 +119,9 @@ namespace Remus
                 _logger.LogInformation("Invalid command.");
                 return;
             }
+
+            var command = _commandTrie.GetCommandSuggestions(ArgumentParser.CommandName)[0];
+            command.Run(sender, ArgumentParser);
         }
     }
 }

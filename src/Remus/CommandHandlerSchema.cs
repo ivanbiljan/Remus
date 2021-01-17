@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using JetBrains.Annotations;
 using Remus.Attributes;
 
 namespace Remus
@@ -19,8 +20,8 @@ namespace Remus
         /// <param name="callback">The callback, which must not be <see langword="null" />.</param>
         /// <param name="handlerObject">The handler object, i.e the instance this handler belongs to.</param>
         public CommandHandlerSchema(
-            CommandHandlerAttribute commandHandlerAttribute,
-            MethodInfo callback,
+            [NotNull] CommandHandlerAttribute commandHandlerAttribute,
+            [NotNull] MethodInfo callback,
             object? handlerObject = null)
         {
             _commandHandlerAttribute = commandHandlerAttribute ??
