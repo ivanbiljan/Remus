@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
-using Remus.Exceptions;
 using Remus.Parsing.Arguments;
 
 namespace Remus
@@ -15,12 +14,16 @@ namespace Remus
     public sealed class Command : IEquatable<Command>
     {
         private readonly ILogger _logger;
-        
+
         internal readonly ICommandService CommandService;
         internal readonly object? HandlerObject;
         internal readonly ISet<CommandHandlerSchema> HandlerSchemas = new HashSet<CommandHandlerSchema>();
 
-        internal Command([NotNull] ILogger logger, [NotNull] ICommandService commandService, [NotNull] string name, object handlerObject = null)
+        internal Command(
+            [NotNull] ILogger logger,
+            [NotNull] ICommandService commandService,
+            [NotNull] string name,
+            object handlerObject = null)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             CommandService = commandService ?? throw new ArgumentNullException(nameof(commandService));
@@ -52,7 +55,7 @@ namespace Remus
         /// <summary>
         ///     Registers a new command handler for this command.
         /// </summary>
-        /// <param name="commandHandlerSchema">The command handler schema, which must not be <see langword="null"/>.</param>
+        /// <param name="commandHandlerSchema">The command handler schema, which must not be <see langword="null" />.</param>
         internal void RegisterHandler([NotNull] CommandHandlerSchema commandHandlerSchema)
         {
             if (commandHandlerSchema is null)

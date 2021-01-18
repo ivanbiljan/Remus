@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Immutable;
-using System.Diagnostics;
+﻿using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -55,7 +53,8 @@ namespace Remus.Analyzers
                 var parameterAttributes = parameterSymbol.GetAttributes();
                 var hasOptionalArgumentAttribute =
                     parameterAttributes.Any(a => a.AttributeClass.Name == optionalArgumentAttribute.Name);
-                if (hasOptionalArgumentAttribute && !parameterSymbol.IsOptional || parameterSymbol.IsOptional && !hasOptionalArgumentAttribute)
+                if (hasOptionalArgumentAttribute && !parameterSymbol.IsOptional ||
+                    parameterSymbol.IsOptional && !hasOptionalArgumentAttribute)
                 {
                     context.ReportDiagnostic(Diagnostic.Create(Rule, parameterSymbol.Locations[0]));
                 }

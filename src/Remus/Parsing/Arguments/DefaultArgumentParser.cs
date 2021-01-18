@@ -1,15 +1,14 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Remus.Parsing.Arguments
 {
     /// <summary>
-    /// Represents the default argument parser. Aims to replicate nix style option parsing and uses whitespace as argument separators.
+    ///     Represents the default argument parser. Aims to replicate nix style option parsing and uses whitespace as argument
+    ///     separators.
     /// </summary>
     internal sealed class DefaultArgumentParser : IArgumentParser
     {
@@ -23,7 +22,7 @@ namespace Remus.Parsing.Arguments
         public IReadOnlyList<string> Arguments { get; private set; } = new List<string>();
 
         /// <inheritdoc />
-        public IReadOnlyList<char> Flags { get; private set; } = new List<char>();
+        public IReadOnlyList<char> Flags { get; } = new List<char>();
 
         /// <inheritdoc />
         public IReadOnlyDictionary<string, string?> Options { get; private set; } = new Dictionary<string, string?>();

@@ -33,7 +33,7 @@ namespace Remus.Parsing.TypeParsers
             {
                 throw new ArgumentNullException(nameof(type));
             }
-            
+
             _parsers[type] = parser ?? throw new ArgumentNullException(nameof(parser));
         }
 

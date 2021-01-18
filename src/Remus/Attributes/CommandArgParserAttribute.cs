@@ -1,20 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Remus.Parsing.TypeParsers;
 
-namespace Remus.Attributes {
+namespace Remus.Attributes
+{
     /// <summary>
-    /// This attribute is used to mark parameters that wish to rely on specialized type parsers when parsing.
+    ///     This attribute is used to mark parameters that wish to rely on specialized type parsers when parsing.
     /// </summary>
     [AttributeUsage(AttributeTargets.Parameter)]
     [PublicAPI]
-    public sealed class CommandArgParserAttribute : Attribute {
+    public sealed class CommandArgParserAttribute : Attribute
+    {
         /// <summary>
-        /// Initializes a new instance of the <see cref="CommandArgParserAttribute"/> with the specified type of parser.
+        ///     Initializes a new instance of the <see cref="CommandArgParserAttribute" /> with the specified type of parser.
         /// </summary>
         /// <param name="parserType">The type of parser.</param>
         public CommandArgParserAttribute([NotNull] Type parserType)
@@ -33,7 +31,7 @@ namespace Remus.Attributes {
         }
 
         /// <summary>
-        /// Gets the type of parser.
+        ///     Gets the type of parser.
         /// </summary>
         public Type ParserType { get; }
     }

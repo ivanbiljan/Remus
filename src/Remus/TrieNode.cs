@@ -1,11 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Remus {
+namespace Remus
+{
     /// <summary>
-    /// Represents a node in a trie.
+    ///     Represents a node in a trie.
     /// </summary>
     internal sealed class TrieNode
     {
@@ -13,13 +11,13 @@ namespace Remus {
         {
             Letter = letter;
         }
-        
+
         public char Letter { get; }
-        
+
         public string? Word { get; set; }
 
         public bool IsFullWord => Word != null;
-        
+
         public IDictionary<char, TrieNode> Children { get; } = new Dictionary<char, TrieNode>();
     }
 }

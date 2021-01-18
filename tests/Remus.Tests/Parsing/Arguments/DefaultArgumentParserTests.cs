@@ -1,19 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Remus.Parsing.Arguments;
 using Xunit;
 
-namespace Remus.Tests.Parsing.Arguments {
+namespace Remus.Tests.Parsing.Arguments
+{
     public sealed class DefaultArgumentParserTests
     {
         [Fact]
         public void Parse_NullOrEmptyInputString_ThrowsArgumentException()
         {
             var argumentParser = new DefaultArgumentParser();
-            
+
             Assert.Throws<ArgumentException>(() => argumentParser.Parse(string.Empty, Array.Empty<string>()));
             Assert.Throws<ArgumentException>(() => argumentParser.Parse(null!, Array.Empty<string>()));
         }

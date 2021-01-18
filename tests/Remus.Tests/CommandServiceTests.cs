@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Remus.Exceptions;
 using Remus.Parsing.Arguments;
 using Remus.Parsing.TypeParsers;
 using Xunit;
-using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace Remus.Tests
 {
@@ -93,7 +91,7 @@ namespace Remus.Tests
         }
 
         [Fact]
-        public void Evaluate_NullSender_ThrowsArgumentNullException() 
+        public void Evaluate_NullSender_ThrowsArgumentNullException()
         {
             var commandService = new CommandService(new Mock<ILogger>().Object, new Mock<IArgumentParser>().Object,
                 new Mock<ITypeParserCollection>().Object);
@@ -108,7 +106,7 @@ namespace Remus.Tests
             var argumentParser = new Mock<IArgumentParser>();
             var typeParsers = new Mock<ITypeParserCollection>();
             var commandService = new CommandService(logger.Object, argumentParser.Object, typeParsers.Object);
-            
+
             commandService.Register(new TestCommandRegistry());
             commandService.Evaluate("command", new Mock<ICommandSender>().Object);
 

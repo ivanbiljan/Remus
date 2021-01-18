@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Remus.Parsing.TypeParsers
+﻿namespace Remus.Parsing.TypeParsers
 {
     internal sealed class CharParser : ITypeParser<char>
     {

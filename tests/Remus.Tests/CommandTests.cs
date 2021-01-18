@@ -1,7 +1,6 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Remus.Parsing.TypeParsers;
 using Xunit;
 
 namespace Remus.Tests

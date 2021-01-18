@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Remus.Attributes;
 using Xunit;
 
-namespace Remus.Tests {
-    public sealed class CommandTrieTests {
+namespace Remus.Tests
+{
+    public sealed class CommandTrieTests
+    {
         [Fact]
         public void AddCommand_NullCommand_ThrowsArgumentNullException()
         {
@@ -17,7 +15,7 @@ namespace Remus.Tests {
 
             Assert.Throws<ArgumentNullException>(() => trie.AddCommand(null!));
         }
-        
+
         [Fact]
         public void AddCommands_NullCommands_ThrowsArgumentNullException()
         {
@@ -25,7 +23,7 @@ namespace Remus.Tests {
 
             Assert.Throws<ArgumentNullException>(() => trie.AddCommands(null!));
         }
-        
+
         [Fact]
         public void GetCommandSuggestions_NullSearchQuery_ThrowsArgumentException()
         {
@@ -59,7 +57,7 @@ namespace Remus.Tests {
         }
 
         [Fact]
-        public void GetCommandSuggestions_IsCorrect() 
+        public void GetCommandSuggestions_IsCorrect()
         {
             var trie = new CommandTrie();
             var mockLogger = new Mock<ILogger>();
@@ -87,7 +85,7 @@ namespace Remus.Tests {
             var trie = new CommandTrie();
             var mockLogger = new Mock<ILogger>();
             var mockCommandService = new Mock<ICommandService>();
-            var commandNames = new string[] {"cmd", "cmdsub", "cmd sub", "cmd sub c", "cmd set", "sub"};
+            var commandNames = new[] {"cmd", "cmdsub", "cmd sub", "cmd sub c", "cmd set", "sub"};
             foreach (var commandName in commandNames)
             {
                 trie.AddCommand(new Command(mockLogger.Object, mockCommandService.Object, commandName));

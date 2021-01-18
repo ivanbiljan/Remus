@@ -3,9 +3,15 @@
     internal sealed class BooleanParser : ITypeParser<bool>
     {
         /// <inheritdoc />
-        public bool Parse(string input) => bool.Parse(input);
+        public bool Parse(string input)
+        {
+            return bool.Parse(input);
+        }
 
         /// <inheritdoc />
-        public bool TryParse(string input, out bool obj) => bool.TryParse(input, out obj);
+        public bool TryParse(string input, out bool obj)
+        {
+            return bool.TryParse(input, out obj);
+        }
     }
 }

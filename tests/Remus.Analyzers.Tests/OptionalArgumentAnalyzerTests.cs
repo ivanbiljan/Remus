@@ -1,11 +1,12 @@
-﻿using System;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Remus.Analyzers.Tests.Helpers;
 using Xunit;
 
-namespace Remus.Analyzers.Tests {
-    public sealed class OptionalArgumentAnalyzerTests : DiagnosticVerifier {
+namespace Remus.Analyzers.Tests
+{
+    public sealed class OptionalArgumentAnalyzerTests : DiagnosticVerifier
+    {
         [Fact]
         public void MethodDoesNotHaveCommandHandlerAttribute_NoDiagnosticIsTriggered()
         {
@@ -21,7 +22,7 @@ namespace AnalyzerTest {
         }
     }
 }";
-            
+
             VerifyCSharpDiagnostic(source);
         }
 
@@ -57,7 +58,8 @@ namespace AnalyzerTest {
     }
 }";
 
-            var expectedDiagnosticResult = new DiagnosticResult {
+            var expectedDiagnosticResult = new DiagnosticResult
+            {
                 Id = "Remus0001",
                 Message = new LocalizableResourceString(nameof(Resources.OptionalArgumentAnalyzerMessageFormat),
                     Resources.ResourceManager, typeof(Resources)).ToString(),

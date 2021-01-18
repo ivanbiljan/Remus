@@ -1,23 +1,28 @@
-﻿using Microsoft.CodeAnalysis;
-using System;
+﻿using System;
+using Microsoft.CodeAnalysis;
 
-namespace Remus.Analyzers.Tests.Helpers {
+namespace Remus.Analyzers.Tests.Helpers
+{
     /// <summary>
-    /// Location where the diagnostic appears, as determined by path, line number, and column number.
+    ///     Location where the diagnostic appears, as determined by path, line number, and column number.
     /// </summary>
-    public readonly struct DiagnosticResultLocation {
-        public DiagnosticResultLocation(string path, int line, int column) {
-            if (line < -1) {
+    public readonly struct DiagnosticResultLocation
+    {
+        public DiagnosticResultLocation(string path, int line, int column)
+        {
+            if (line < -1)
+            {
                 throw new ArgumentOutOfRangeException(nameof(line), "line must be >= -1");
             }
 
-            if (column < -1) {
+            if (column < -1)
+            {
                 throw new ArgumentOutOfRangeException(nameof(column), "column must be >= -1");
             }
 
-            this.Path = path;
-            this.Line = line;
-            this.Column = column;
+            Path = path;
+            Line = line;
+            Column = column;
         }
 
         public string Path { get; }
@@ -26,20 +31,21 @@ namespace Remus.Analyzers.Tests.Helpers {
     }
 
     /// <summary>
-    /// Struct that stores information about a Diagnostic appearing in a source
+    ///     Struct that stores information about a Diagnostic appearing in a source
     /// </summary>
-    public struct DiagnosticResult {
+    public struct DiagnosticResult
+    {
         private DiagnosticResultLocation[] _locations;
 
-        public DiagnosticResultLocation[] Locations {
-            get {
-                this._locations ??= new DiagnosticResultLocation[] { };
-                return this._locations;
+        public DiagnosticResultLocation[] Locations
+        {
+            get
+            {
+                _locations ??= new DiagnosticResultLocation[] { };
+                return _locations;
             }
 
-            set {
-                this._locations = value;
-            }
+            set => _locations = value;
         }
 
         public DiagnosticSeverity Severity { get; set; }
@@ -48,22 +54,10 @@ namespace Remus.Analyzers.Tests.Helpers {
 
         public string Message { get; set; }
 
-        public string Path {
-            get {
-                return this.Locations.Length > 0 ? this.Locations[0].Path : "";
-            }
-        }
+        public string Path => Locations.Length > 0 ? Locations[0].Path : "";
 
-        public int Line {
-            get {
-                return this.Locations.Length > 0 ? this.Locations[0].Line : -1;
-            }
-        }
+        public int Line => Locations.Length > 0 ? Locations[0].Line : -1;
 
-        public int Column {
-            get {
-                return this.Locations.Length > 0 ? this.Locations[0].Column : -1;
-            }
-        }
+        public int Column => Locations.Length > 0 ? Locations[0].Column : -1;
     }
 }

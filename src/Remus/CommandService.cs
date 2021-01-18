@@ -1,15 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using Remus.Attributes;
-using Remus.Exceptions;
-using Remus.Extensions;
 using Remus.Parsing.Arguments;
 using Remus.Parsing.TypeParsers;
 
@@ -27,12 +22,16 @@ namespace Remus
         private readonly ILogger _logger;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CommandService"/> class with the specified <see cref="ILogger"/>, <see cref="IArgumentParser"/> and <see cref="ITypeParserCollection"/>.
+        ///     Initializes a new instance of the <see cref="CommandService" /> class with the specified <see cref="ILogger" />,
+        ///     <see cref="IArgumentParser" /> and <see cref="ITypeParserCollection" />.
         /// </summary>
-        /// <param name="logger">The <see cref="ILogger"/> instance, which must not be <see langword="null"/>.</param>
-        /// <param name="argumentParser">The <see cref="IArgumentParser"/> instance, which must not be <see langword="null"/>.</param>
-        /// <param name="parsers">The <see cref="ITypeParserCollection"/> instance, which must not be <see langword="null"/>.</param>
-        public CommandService([NotNull] ILogger logger, [NotNull] IArgumentParser argumentParser, [NotNull] ITypeParserCollection parsers)
+        /// <param name="logger">The <see cref="ILogger" /> instance, which must not be <see langword="null" />.</param>
+        /// <param name="argumentParser">The <see cref="IArgumentParser" /> instance, which must not be <see langword="null" />.</param>
+        /// <param name="parsers">The <see cref="ITypeParserCollection" /> instance, which must not be <see langword="null" />.</param>
+        public CommandService(
+            [NotNull] ILogger logger,
+            [NotNull] IArgumentParser argumentParser,
+            [NotNull] ITypeParserCollection parsers)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             ArgumentParser = argumentParser ?? throw new ArgumentNullException(nameof(argumentParser));
@@ -65,7 +64,8 @@ namespace Remus
                 var command = _commandTrie.GetCommandSuggestions(commandHandlerAttribute.Name).ElementAtOrDefault(0);
                 if (command != null && command.HandlerObject != obj)
                 {
-                    _logger.LogWarning($"Command '{commandHandlerAttribute.Name}' is already defined by a different object and was skipped.");
+                    _logger.LogWarning(
+                        $"Command '{commandHandlerAttribute.Name}' is already defined by a different object and was skipped.");
                     continue;
                 }
 
@@ -96,8 +96,10 @@ namespace Remus
         }
 
         /// <inheritdoc />
-        public IEnumerable<Command> GetCommands(Predicate<Command>? predicate = null) =>
-            _commandTrie.Commands.Where(c => predicate?.Invoke(c) ?? true);
+        public IEnumerable<Command> GetCommands(Predicate<Command>? predicate = null)
+        {
+            return _commandTrie.Commands.Where(c => predicate?.Invoke(c) ?? true);
+        }
 
         /// <inheritdoc />
         public void Evaluate(string input, ICommandSender sender)

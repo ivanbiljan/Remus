@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Linq;
 using JetBrains.Annotations;
-using Microsoft.VisualBasic;
 
 namespace Remus
 {
     /// <summary>
-    /// Represents a command trie.
+    ///     Represents a command trie.
     /// </summary>
     internal sealed class CommandTrie
     {
@@ -17,22 +14,22 @@ namespace Remus
         private readonly TrieNode _root = new TrieNode('\0');
 
         /// <summary>
-        /// Gets an enumerable collection of commands.
+        ///     Gets an enumerable collection of commands.
         /// </summary>
         [ItemNotNull]
         public IEnumerable<Command> Commands => _commandMap.Values;
 
         /// <summary>
-        /// Adds a command to the trie.
+        ///     Adds a command to the trie.
         /// </summary>
-        /// <param name="command">The command, which must not be <see langword="null"/>.</param>
+        /// <param name="command">The command, which must not be <see langword="null" />.</param>
         public void AddCommand([NotNull] Command command)
         {
             if (command is null)
             {
                 throw new ArgumentNullException(nameof(command));
             }
-            
+
             var word = command.Name;
             var currentNode = _root;
             for (var i = 0; i < word.Length; ++i)
@@ -56,16 +53,16 @@ namespace Remus
         }
 
         /// <summary>
-        /// Adds a list of commands to the trie.
+        ///     Adds a list of commands to the trie.
         /// </summary>
-        /// <param name="commands">The command list, which must not be <see langword="null"/>.</param>
+        /// <param name="commands">The command list, which must not be <see langword="null" />.</param>
         public void AddCommands([NotNull] params Command[] commands)
         {
             if (commands is null)
             {
                 throw new ArgumentNullException(nameof(commands));
             }
-            
+
             foreach (var command in commands)
             {
                 AddCommand(command);
@@ -73,7 +70,7 @@ namespace Remus
         }
 
         /// <summary>
-        /// Gets a list of commands that match the given prefix.
+        ///     Gets a list of commands that match the given prefix.
         /// </summary>
         /// <param name="searchQuery">The prefix to search for.</param>
         /// <returns>A list of commands that match the given prefix.</returns>
@@ -122,9 +119,9 @@ namespace Remus
         }
 
         /// <summary>
-        /// Removes a command with the specified name.
+        ///     Removes a command with the specified name.
         /// </summary>
-        /// <param name="name">The name, which must not be <see langword="null"/>.</param>
+        /// <param name="name">The name, which must not be <see langword="null" />.</param>
         public void RemoveCommand([NotNull] string name)
         {
             if (name is null)
@@ -142,7 +139,7 @@ namespace Remus
                     return null;
                 }
 
-                if (!node.Children.TryGetValue(name[currentCharacterIndex], out var childNode)) 
+                if (!node.Children.TryGetValue(name[currentCharacterIndex], out var childNode))
                 {
                     return node;
                 }

@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -10,17 +7,19 @@ using Remus.Parsing.Arguments;
 using Remus.Parsing.TypeParsers;
 using Serilog;
 
-namespace Remus.Extensions {
+namespace Remus.Extensions
+{
     /// <summary>
-    /// Provides extension methods for the <see cref="IServiceProvider"/> class.
+    ///     Provides extension methods for the <see cref="IServiceProvider" /> class.
     /// </summary>
     [PublicAPI]
-    public static class IServiceCollectionExtensions {
+    public static class IServiceCollectionExtensions
+    {
         /// <summary>
-        /// Adds Remus' services to the specified <see cref="IServiceCollection"/>.
+        ///     Adds Remus' services to the specified <see cref="IServiceCollection" />.
         /// </summary>
-        /// <param name="serviceCollection">The service provider, which must not be <see langword="null"/>.</param>
-        /// <returns>The modified <see cref="IServiceCollection"/>.</returns>
+        /// <param name="serviceCollection">The service provider, which must not be <see langword="null" />.</param>
+        /// <returns>The modified <see cref="IServiceCollection" />.</returns>
         public static IServiceCollection AddRemus([NotNull] this IServiceCollection serviceCollection)
         {
             if (serviceCollection is null)
