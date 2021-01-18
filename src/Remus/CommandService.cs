@@ -53,7 +53,6 @@ namespace Remus
                 throw new ArgumentNullException(nameof(obj));
             }
 
-            var commands = _commandTrie.Commands.ToList();
             var methods = obj.GetType().GetMethods(HandlerBindingFlags);
             foreach (var method in methods)
             {
@@ -63,7 +62,7 @@ namespace Remus
                     continue;
                 }
 
-                var command = commands.FirstOrDefault(c => c.Name == commandHandlerAttribute.Name);
+                var command = _commandTrie.GetCommandSuggestions(commandHandlerAttribute.Name).ElementAtOrDefault(0);
                 if (command != null && command.HandlerObject != obj)
                 {
                     _logger.LogWarning($"Command '{commandHandlerAttribute.Name}' is already defined by a different object and was skipped.");

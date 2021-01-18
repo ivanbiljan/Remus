@@ -119,10 +119,33 @@ namespace Remus.Tests
         [Fact]
         public void Evaluate_IsCorrect()
         {
+            var sender = new Mock<ICommandSender>().Object;
             var logger = new Mock<ILogger>();
             var argumentParser = new Mock<IArgumentParser>();
             var typeParsers = new Mock<ITypeParserCollection>();
-            var commandService = new CommandService(logger.Object, argumentParser.Object, typeParsers.Object);
+            var commandRegistry = new TestCommandRegistry();
+            var commandService = new CommandService(logger.Object, new DefaultArgumentParser(), new Parsers());
+
+            commandService.Register(commandRegistry);
+
+            commandService.Evaluate("test", sender);
+            Assert.Equal(1024, commandRegistry.Number);
+
+            commandService.Evaluate("test 2048", sender);
+            Assert.Equal(2048, commandRegistry.Number);
+
+            commandService.Evaluate("test -x 200", sender);
+            Assert.Equal(0, commandRegistry.Number);
+
+            commandService.Evaluate("test2 123 true 123", sender);
+            Assert.Equal(123, commandRegistry.Number);
+            Assert.True(commandRegistry.Boolean);
+            Assert.Equal("123", commandRegistry.String);
+
+            commandService.Evaluate("test2 str true 123", sender);
+            Assert.Equal(-1, commandRegistry.Number);
+            Assert.True(commandRegistry.Boolean);
+            Assert.Equal("123", commandRegistry.String);
         }
 
         [Fact]

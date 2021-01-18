@@ -65,7 +65,7 @@ namespace Remus
                         bestScore = score;
                     }
                 }
-                catch (TypeParserException)
+                catch (Exception)
                 {
                 }
             }
