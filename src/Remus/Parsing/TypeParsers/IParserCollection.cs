@@ -23,18 +23,6 @@ namespace Remus.Parsing.TypeParsers
         void AddParser<T>([NotNull] ITypeParser<T> parser);
 
         /// <summary>
-        ///     Removes a type parser.
-        /// </summary>
-        /// <param name="type">The type, which must not be <see langword="null" />.</param>
-        void RemoveParser([NotNull] Type type);
-
-        /// <summary>
-        ///     Removes a parser that operates on instances of type <typeparamref name="T" />.
-        /// </summary>
-        /// <typeparam name="T">The type this parser parses.</typeparam>
-        void RemoveParser<T>();
-
-        /// <summary>
         ///     Gets a parser for the specified type.
         /// </summary>
         /// <typeparam name="T">The type.</typeparam>
@@ -45,5 +33,17 @@ namespace Remus.Parsing.TypeParsers
         /// </summary>
         /// <param name="type">The type, which must not be <see langword="null" />.</param>
         ITypeParser? GetParser([NotNull] Type type);
+
+        /// <summary>
+        ///     Removes a type parser.
+        /// </summary>
+        /// <param name="type">The type, which must not be <see langword="null" />.</param>
+        void RemoveParser([NotNull] Type type);
+
+        /// <summary>
+        ///     Removes a parser that operates on instances of type <typeparamref name="T" />.
+        /// </summary>
+        /// <typeparam name="T">The type this parser parses.</typeparam>
+        void RemoveParser<T>();
     }
 }

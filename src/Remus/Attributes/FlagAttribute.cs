@@ -22,13 +22,13 @@ namespace Remus.Attributes
         }
 
         /// <summary>
-        ///     Gets letter that identifies the flag.
-        /// </summary>
-        public char Identifier { get; }
-
-        /// <summary>
         ///     Gets the description.
         /// </summary>
         public string Description { get; }
+
+        /// <summary>
+        ///     Gets letter that identifies the flag.
+        /// </summary>
+        public char Identifier { get; }
     }
 }

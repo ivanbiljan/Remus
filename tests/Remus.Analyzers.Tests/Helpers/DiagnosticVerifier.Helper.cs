@@ -16,25 +16,26 @@ namespace Remus.Analyzers.Tests.Helpers
     /// </summary>
     public abstract partial class DiagnosticVerifier
     {
+        private static readonly MetadataReference CodeAnalysisReference =
+            MetadataReference.CreateFromFile(typeof(Compilation).Assembly.Location);
+
         private static readonly MetadataReference CorlibReference =
             MetadataReference.CreateFromFile(typeof(object).Assembly.Location);
-
-        private static readonly MetadataReference SystemCoreReference =
-            MetadataReference.CreateFromFile(typeof(Enumerable).Assembly.Location);
 
         private static readonly MetadataReference CSharpSymbolsReference =
             MetadataReference.CreateFromFile(typeof(CSharpCompilation).Assembly.Location);
 
-        private static readonly MetadataReference CodeAnalysisReference =
-            MetadataReference.CreateFromFile(typeof(Compilation).Assembly.Location);
-
         private static readonly MetadataReference RemusReference =
             MetadataReference.CreateFromFile(typeof(CommandHandlerAttribute).Assembly.Location);
 
-        internal static string DefaultFilePathPrefix = "Test";
+        private static readonly MetadataReference SystemCoreReference =
+            MetadataReference.CreateFromFile(typeof(Enumerable).Assembly.Location);
+
         internal static string CSharpDefaultFileExt = "cs";
-        internal static string VisualBasicDefaultExt = "vb";
+
+        internal static string DefaultFilePathPrefix = "Test";
         internal static string TestProjectName = "TestProject";
+        internal static string VisualBasicDefaultExt = "vb";
 
         #region Get Diagnostics
 

@@ -23,16 +23,17 @@ namespace Remus
         ITypeParserCollection TypeParsers { get; }
 
         /// <summary>
-        ///     Registers commands defined by the specified object.
-        /// </summary>
-        /// <param name="obj">The object, which must not be <see langword="null" />.</param>
-        void Register([NotNull] object obj);
-
-        /// <summary>
         ///     Deregisters commands defined by the specified object.
         /// </summary>
         /// <param name="obj">The object, which must not be <see langword="null" />.</param>
         void Deregister([NotNull] object obj);
+
+        /// <summary>
+        ///     Evaluates the given input string using the specified command sender.
+        /// </summary>
+        /// <param name="input">The input string, which must not be <see langword="null" />.</param>
+        /// <param name="sender">The sender, which must not be <see langword="null" />.</param>
+        void Evaluate([NotNull] string input, [NotNull] ICommandSender sender);
 
         /// <summary>
         ///     Returns an enumerable collection of commands that match the given predicate.
@@ -42,10 +43,9 @@ namespace Remus
         IEnumerable<Command> GetCommands(Predicate<Command>? predicate = null);
 
         /// <summary>
-        ///     Evaluates the given input string using the specified command sender.
+        ///     Registers commands defined by the specified object.
         /// </summary>
-        /// <param name="input">The input string, which must not be <see langword="null" />.</param>
-        /// <param name="sender">The sender, which must not be <see langword="null" />.</param>
-        void Evaluate([NotNull] string input, [NotNull] ICommandSender sender);
+        /// <param name="obj">The object, which must not be <see langword="null" />.</param>
+        void Register([NotNull] object obj);
     }
 }

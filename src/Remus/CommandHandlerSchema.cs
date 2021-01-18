@@ -30,11 +30,6 @@ namespace Remus
         }
 
         /// <summary>
-        ///     Gets the handler object.
-        /// </summary>
-        internal object? HandlerObject { get; init; }
-
-        /// <summary>
         ///     Gets the callback.
         /// </summary>
         internal MethodInfo Callback { get; init; }
@@ -45,13 +40,18 @@ namespace Remus
         public string Description => _commandHandlerAttribute.Description;
 
         /// <summary>
-        ///     Gets the syntax.
+        ///     Gets the handler object.
         /// </summary>
-        public string? Syntax => _commandHandlerAttribute.Syntax;
+        internal object? HandlerObject { get; init; }
 
         /// <summary>
         ///     Gets the help text.
         /// </summary>
         public string? HelpText => _commandHandlerAttribute.HelpText;
+
+        /// <summary>
+        ///     Gets the syntax.
+        /// </summary>
+        public string? Syntax => _commandHandlerAttribute.Syntax;
     }
 }

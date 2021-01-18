@@ -30,11 +30,6 @@ namespace Remus.Attributes
         }
 
         /// <summary>
-        ///     Gets the name.
-        /// </summary>
-        public string Name { get; }
-
-        /// <summary>
         ///     Gets the description.
         /// </summary>
         public string Description { get; }
@@ -43,6 +38,11 @@ namespace Remus.Attributes
         ///     Gets or sets the help text.
         /// </summary>
         public string? HelpText { get; set; }
+
+        /// <summary>
+        ///     Gets the name.
+        /// </summary>
+        public string Name { get; }
 
         /// <summary>
         ///     Gets or sets the syntax.

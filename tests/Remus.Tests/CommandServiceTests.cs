@@ -12,6 +12,13 @@ namespace Remus.Tests
     public sealed class CommandServiceTests
     {
         [Fact]
+        public void Ctor_NullArgumentParser_ThrowsArgumentNullException()
+        {
+            Assert.Throws<ArgumentNullException>(() =>
+                new CommandService(new Mock<ILogger>().Object, null!, new Mock<ITypeParserCollection>().Object));
+        }
+
+        [Fact]
         public void Ctor_NullLogger_ThrowsArgumentNullException()
         {
             Assert.Throws<ArgumentNullException>(() =>
@@ -20,48 +27,10 @@ namespace Remus.Tests
         }
 
         [Fact]
-        public void Ctor_NullArgumentParser_ThrowsArgumentNullException()
-        {
-            Assert.Throws<ArgumentNullException>(() =>
-                new CommandService(new Mock<ILogger>().Object, null!, new Mock<ITypeParserCollection>().Object));
-        }
-
-        [Fact]
         public void Ctor_NullTypeParserCollection_ThrowsArgumentNullException()
         {
             Assert.Throws<ArgumentNullException>(() =>
                 new CommandService(new Mock<ILogger>().Object, new Mock<IArgumentParser>().Object, null!));
-        }
-
-        [Fact]
-        public void Register_NullObject_ThrowsArgumentNullException()
-        {
-            var commandService = new CommandService(new Mock<ILogger>().Object, new Mock<IArgumentParser>().Object,
-                new Mock<ITypeParserCollection>().Object);
-
-            Assert.Throws<ArgumentNullException>(() => commandService.Register(null!));
-        }
-
-        [Fact]
-        public void Register_IsCorrect()
-        {
-            var commandService = new CommandService(new Mock<ILogger>().Object, new Mock<IArgumentParser>().Object,
-                new Mock<ITypeParserCollection>().Object);
-
-            commandService.Register(new TestCommandRegistry());
-
-            Assert.Equal(new[] {"test", "test2"}, commandService.GetCommands().Select(c => c.Name));
-        }
-
-        [Fact]
-        public void Deregister_NullObject_ThrowsArgumentNullException()
-        {
-            var logger = new Mock<ILogger>();
-            var argumentParser = new Mock<IArgumentParser>();
-            var typeParsers = new Mock<ITypeParserCollection>();
-            var commandService = new CommandService(logger.Object, argumentParser.Object, typeParsers.Object);
-
-            Assert.Throws<ArgumentNullException>(() => commandService.Deregister(null!));
         }
 
         [Fact]
@@ -81,22 +50,14 @@ namespace Remus.Tests
         }
 
         [Fact]
-        public void Evaluate_NullInput_ThrowsArgumentNullException()
+        public void Deregister_NullObject_ThrowsArgumentNullException()
         {
-            var commandService = new CommandService(new Mock<ILogger>().Object, new Mock<IArgumentParser>().Object,
-                new Mock<ITypeParserCollection>().Object);
+            var logger = new Mock<ILogger>();
+            var argumentParser = new Mock<IArgumentParser>();
+            var typeParsers = new Mock<ITypeParserCollection>();
+            var commandService = new CommandService(logger.Object, argumentParser.Object, typeParsers.Object);
 
-            Assert.Throws<ArgumentNullException>(
-                () => commandService.Evaluate(null!, new Mock<ICommandSender>().Object));
-        }
-
-        [Fact]
-        public void Evaluate_NullSender_ThrowsArgumentNullException()
-        {
-            var commandService = new CommandService(new Mock<ILogger>().Object, new Mock<IArgumentParser>().Object,
-                new Mock<ITypeParserCollection>().Object);
-
-            Assert.Throws<ArgumentNullException>(() => commandService.Evaluate("test", null!));
+            Assert.Throws<ArgumentNullException>(() => commandService.Deregister(null!));
         }
 
         [Fact]
@@ -147,6 +108,44 @@ namespace Remus.Tests
         }
 
         [Fact]
+        public void Evaluate_NullInput_ThrowsArgumentNullException()
+        {
+            var commandService = new CommandService(new Mock<ILogger>().Object, new Mock<IArgumentParser>().Object,
+                new Mock<ITypeParserCollection>().Object);
+
+            Assert.Throws<ArgumentNullException>(
+                () => commandService.Evaluate(null!, new Mock<ICommandSender>().Object));
+        }
+
+        [Fact]
+        public void Evaluate_NullSender_ThrowsArgumentNullException()
+        {
+            var commandService = new CommandService(new Mock<ILogger>().Object, new Mock<IArgumentParser>().Object,
+                new Mock<ITypeParserCollection>().Object);
+
+            Assert.Throws<ArgumentNullException>(() => commandService.Evaluate("test", null!));
+        }
+
+        [Fact]
+        public void GetCommands_CustomPredicate_IsCorrect()
+        {
+            var logger = new Mock<ILogger>();
+            var argumentParser = new Mock<IArgumentParser>();
+            var typeParsers = new Mock<ITypeParserCollection>();
+            var commandRegistry = new TestCommandRegistry();
+            var commandService = new CommandService(logger.Object, argumentParser.Object, typeParsers.Object);
+
+            commandService.Register(commandRegistry);
+
+            var expected = new List<Command>
+            {
+                new Command(logger.Object, commandService, "test2", commandRegistry)
+            };
+
+            Assert.Equal(expected, commandService.GetCommands(c => c.Name == "test2"));
+        }
+
+        [Fact]
         public void GetCommands_NoCommands_ReturnsEmptyCollection()
         {
             var logger = new Mock<ILogger>();
@@ -178,22 +177,23 @@ namespace Remus.Tests
         }
 
         [Fact]
-        public void GetCommands_CustomPredicate_IsCorrect()
+        public void Register_IsCorrect()
         {
-            var logger = new Mock<ILogger>();
-            var argumentParser = new Mock<IArgumentParser>();
-            var typeParsers = new Mock<ITypeParserCollection>();
-            var commandRegistry = new TestCommandRegistry();
-            var commandService = new CommandService(logger.Object, argumentParser.Object, typeParsers.Object);
+            var commandService = new CommandService(new Mock<ILogger>().Object, new Mock<IArgumentParser>().Object,
+                new Mock<ITypeParserCollection>().Object);
 
-            commandService.Register(commandRegistry);
+            commandService.Register(new TestCommandRegistry());
 
-            var expected = new List<Command>
-            {
-                new Command(logger.Object, commandService, "test2", commandRegistry)
-            };
+            Assert.Equal(new[] {"test", "test2"}, commandService.GetCommands().Select(c => c.Name));
+        }
 
-            Assert.Equal(expected, commandService.GetCommands(c => c.Name == "test2"));
+        [Fact]
+        public void Register_NullObject_ThrowsArgumentNullException()
+        {
+            var commandService = new CommandService(new Mock<ILogger>().Object, new Mock<IArgumentParser>().Object,
+                new Mock<ITypeParserCollection>().Object);
+
+            Assert.Throws<ArgumentNullException>(() => commandService.Register(null!));
         }
 
         //[Fact]

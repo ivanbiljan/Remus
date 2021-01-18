@@ -29,6 +29,16 @@ namespace Remus.Analyzers.Tests.Helpers
         }
 
         /// <summary>
+        ///     Get the existing compiler diagnostics on the inputted document.
+        /// </summary>
+        /// <param name="document">The Document to run the compiler diagnostic analyzers on</param>
+        /// <returns>The compiler diagnostics that were found in the code</returns>
+        private static IEnumerable<Diagnostic> GetCompilerDiagnostics(Document document)
+        {
+            return document.GetSemanticModelAsync().Result.GetDiagnostics();
+        }
+
+        /// <summary>
         ///     Compare two collections of Diagnostics,and return a list of any new diagnostics that appear only in the second
         ///     collection.
         ///     Note: Considers Diagnostics to be the same if they have the same Ids.  In the case of multiple diagnostics with the
@@ -60,16 +70,6 @@ namespace Remus.Analyzers.Tests.Helpers
                     yield return newArray[newIndex++];
                 }
             }
-        }
-
-        /// <summary>
-        ///     Get the existing compiler diagnostics on the inputted document.
-        /// </summary>
-        /// <param name="document">The Document to run the compiler diagnostic analyzers on</param>
-        /// <returns>The compiler diagnostics that were found in the code</returns>
-        private static IEnumerable<Diagnostic> GetCompilerDiagnostics(Document document)
-        {
-            return document.GetSemanticModelAsync().Result.GetDiagnostics();
         }
 
         /// <summary>

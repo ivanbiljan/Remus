@@ -10,19 +10,14 @@ namespace Remus.Parsing.Arguments
     public interface IArgumentParser
     {
         /// <summary>
-        ///     Gets an array of separators.
+        ///     Gets a read-only list of arguments.
         /// </summary>
-        char[] Separators { get; }
+        IReadOnlyList<string> Arguments { get; }
 
         /// <summary>
         ///     Gets the command name.
         /// </summary>
         string CommandName { get; }
-
-        /// <summary>
-        ///     Gets a read-only list of arguments.
-        /// </summary>
-        IReadOnlyList<string> Arguments { get; }
 
         /// <summary>
         ///     Gets a read-only list of flags.
@@ -33,6 +28,11 @@ namespace Remus.Parsing.Arguments
         ///     Gets a read-only dictionary of options.
         /// </summary>
         IReadOnlyDictionary<string, string?> Options { get; }
+
+        /// <summary>
+        ///     Gets an array of separators.
+        /// </summary>
+        char[] Separators { get; }
 
         /// <summary>
         ///     Parses a given input string against a given list of commands.

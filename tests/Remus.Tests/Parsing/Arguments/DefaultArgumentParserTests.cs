@@ -8,23 +8,6 @@ namespace Remus.Tests.Parsing.Arguments
     public sealed class DefaultArgumentParserTests
     {
         [Fact]
-        public void Parse_NullOrEmptyInputString_ThrowsArgumentException()
-        {
-            var argumentParser = new DefaultArgumentParser();
-
-            Assert.Throws<ArgumentException>(() => argumentParser.Parse(string.Empty, Array.Empty<string>()));
-            Assert.Throws<ArgumentException>(() => argumentParser.Parse(null!, Array.Empty<string>()));
-        }
-
-        [Fact]
-        public void Parse_NullAvailableCommandNames_ThrowsArgumentNullException()
-        {
-            var argumentParser = new DefaultArgumentParser();
-
-            Assert.Throws<ArgumentNullException>(() => argumentParser.Parse("test", null!));
-        }
-
-        [Fact]
         public void Parse_IsCorrect()
         {
             var argumentParser = new DefaultArgumentParser();
@@ -43,6 +26,23 @@ namespace Remus.Tests.Parsing.Arguments
             Assert.Equal("tar", argumentParser.CommandName);
             Assert.Equal(expectedOptions, argumentParser.Options);
             Assert.Equal(new[] {"Required argument"}, argumentParser.Arguments);
+        }
+
+        [Fact]
+        public void Parse_NullAvailableCommandNames_ThrowsArgumentNullException()
+        {
+            var argumentParser = new DefaultArgumentParser();
+
+            Assert.Throws<ArgumentNullException>(() => argumentParser.Parse("test", null!));
+        }
+
+        [Fact]
+        public void Parse_NullOrEmptyInputString_ThrowsArgumentException()
+        {
+            var argumentParser = new DefaultArgumentParser();
+
+            Assert.Throws<ArgumentException>(() => argumentParser.Parse(string.Empty, Array.Empty<string>()));
+            Assert.Throws<ArgumentException>(() => argumentParser.Parse(null!, Array.Empty<string>()));
         }
     }
 }

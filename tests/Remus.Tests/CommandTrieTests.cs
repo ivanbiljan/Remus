@@ -25,24 +25,6 @@ namespace Remus.Tests
         }
 
         [Fact]
-        public void GetCommandSuggestions_NullSearchQuery_ThrowsArgumentException()
-        {
-            var trie = new CommandTrie();
-
-            Assert.Throws<ArgumentException>(() => trie.GetCommandSuggestions(null!));
-        }
-
-        [Fact]
-        public void GetCommandSuggestions_NoCommands_ReturnsEmptyList()
-        {
-            var trie = new CommandTrie();
-
-            var suggestions = trie.GetCommandSuggestions("test");
-
-            Assert.Empty(suggestions);
-        }
-
-        [Fact]
         public void GetCommandSuggestions_BadPrefix_ReturnsEmptyList()
         {
             var trie = new CommandTrie();
@@ -72,11 +54,21 @@ namespace Remus.Tests
         }
 
         [Fact]
-        public void RemoveCommand_NullCommand_ThrowsArgumentNullException()
+        public void GetCommandSuggestions_NoCommands_ReturnsEmptyList()
         {
             var trie = new CommandTrie();
 
-            Assert.Throws<ArgumentNullException>(() => trie.RemoveCommand(null!));
+            var suggestions = trie.GetCommandSuggestions("test");
+
+            Assert.Empty(suggestions);
+        }
+
+        [Fact]
+        public void GetCommandSuggestions_NullSearchQuery_ThrowsArgumentException()
+        {
+            var trie = new CommandTrie();
+
+            Assert.Throws<ArgumentException>(() => trie.GetCommandSuggestions(null!));
         }
 
         [Fact]
@@ -104,6 +96,14 @@ namespace Remus.Tests
 
             Assert.Equal(expected, trie.GetCommandSuggestions("cmd"));
             Assert.Empty(trie.GetCommandSuggestions("sub"));
+        }
+
+        [Fact]
+        public void RemoveCommand_NullCommand_ThrowsArgumentNullException()
+        {
+            var trie = new CommandTrie();
+
+            Assert.Throws<ArgumentNullException>(() => trie.RemoveCommand(null!));
         }
     }
 }

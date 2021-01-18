@@ -8,21 +8,21 @@ namespace Remus.Analyzers
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public sealed class OptionalArgumentAnalyzer : DiagnosticAnalyzer
     {
-        private const string DiagnosticId = "Remus0001";
-
         private const string Category = "CodeFix";
-
-        private static readonly LocalizableString Title = new LocalizableResourceString(
-            nameof(Resources.OptionalArgumentAnalyzerTitle), Resources.ResourceManager, typeof(Resources));
-
-        private static readonly LocalizableString MessageFormat = new LocalizableResourceString(
-            nameof(Resources.OptionalArgumentAnalyzerMessageFormat), Resources.ResourceManager, typeof(Resources));
+        private const string DiagnosticId = "Remus0001";
 
         private static readonly LocalizableString Description = new LocalizableResourceString(
             nameof(Resources.OptionalArgumentAnalyzerDescription), Resources.ResourceManager, typeof(Resources));
 
+        private static readonly LocalizableString MessageFormat = new LocalizableResourceString(
+            nameof(Resources.OptionalArgumentAnalyzerMessageFormat), Resources.ResourceManager, typeof(Resources));
+
+        private static readonly LocalizableString Title = new LocalizableResourceString(
+            nameof(Resources.OptionalArgumentAnalyzerTitle), Resources.ResourceManager, typeof(Resources));
+
         private static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat,
             Category, DiagnosticSeverity.Error, true, Description);
+
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

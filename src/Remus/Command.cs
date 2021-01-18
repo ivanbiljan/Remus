@@ -52,6 +52,23 @@ namespace Remus
             return CommandService.Equals(other.CommandService) && Name == other.Name;
         }
 
+        public override bool Equals(object? obj)
+        {
+            return ReferenceEquals(this, obj) || obj is Command other && Equals(other);
+        }
+
+        /// <inheritdoc />
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(CommandService, Name);
+        }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return Name;
+        }
+
         /// <summary>
         ///     Registers a new command handler for this command.
         /// </summary>
@@ -98,23 +115,6 @@ namespace Remus
             {
                 _logger.LogError($"Something went wrong while executing command '{Name}':\n{ex}");
             }
-        }
-
-        /// <inheritdoc />
-        public override string ToString()
-        {
-            return Name;
-        }
-
-        public override bool Equals(object? obj)
-        {
-            return ReferenceEquals(this, obj) || obj is Command other && Equals(other);
-        }
-
-        /// <inheritdoc />
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(CommandService, Name);
         }
     }
 }

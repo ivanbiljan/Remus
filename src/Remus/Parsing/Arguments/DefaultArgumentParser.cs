@@ -16,16 +16,16 @@ namespace Remus.Parsing.Arguments
         public char[] Separators { get; } = {' ', '\t', '\n'};
 
         /// <inheritdoc />
-        public string? CommandName { get; private set; }
-
-        /// <inheritdoc />
-        public IReadOnlyList<string> Arguments { get; private set; } = new List<string>();
+        public IReadOnlyDictionary<string, string?> Options { get; private set; } = new Dictionary<string, string?>();
 
         /// <inheritdoc />
         public IReadOnlyList<char> Flags { get; } = new List<char>();
 
         /// <inheritdoc />
-        public IReadOnlyDictionary<string, string?> Options { get; private set; } = new Dictionary<string, string?>();
+        public IReadOnlyList<string> Arguments { get; private set; } = new List<string>();
+
+        /// <inheritdoc />
+        public string? CommandName { get; private set; }
 
         /// <inheritdoc />
         public void Parse(string input, IReadOnlyCollection<string> availableCommandNames)
@@ -50,6 +50,22 @@ namespace Remus.Parsing.Arguments
             CommandName = ParseCommandName(availableCommandNames, tokens, ref index);
             Arguments = ParseArguments(tokens, ref index);
             Options = ParseOptionals(tokens, ref index);
+        }
+
+        private static List<string> ParseArguments(IReadOnlyList<string> tokens, ref int index)
+        {
+            var arguments = new List<string>();
+            for (; index < tokens.Count; ++index)
+            {
+                if (tokens[index][0] == '-')
+                {
+                    break;
+                }
+
+                arguments.Add(tokens[index]);
+            }
+
+            return arguments;
         }
 
         private static string? ParseCommandName(
@@ -126,22 +142,6 @@ namespace Remus.Parsing.Arguments
             }
 
             return options;
-        }
-
-        private static List<string> ParseArguments(IReadOnlyList<string> tokens, ref int index)
-        {
-            var arguments = new List<string>();
-            for (; index < tokens.Count; ++index)
-            {
-                if (tokens[index][0] == '-')
-                {
-                    break;
-                }
-
-                arguments.Add(tokens[index]);
-            }
-
-            return arguments;
         }
 
         /// <summary>

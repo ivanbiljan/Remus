@@ -42,7 +42,52 @@ namespace Remus
         public IArgumentParser ArgumentParser { get; }
 
         /// <inheritdoc />
+        public IEnumerable<Command> GetCommands(Predicate<Command>? predicate = null)
+        {
+            return _commandTrie.Commands.Where(c => predicate?.Invoke(c) ?? true);
+        }
+
+        /// <inheritdoc />
         public ITypeParserCollection TypeParsers { get; }
+
+        /// <inheritdoc />
+        public void Deregister(object obj)
+        {
+            if (obj is null)
+            {
+                throw new ArgumentNullException(nameof(obj));
+            }
+
+            var commands = _commandTrie.Commands.ToList();
+            for (var i = 0; i < commands.Count; ++i)
+            {
+                _commandTrie.RemoveCommand(commands[i].Name);
+            }
+        }
+
+        /// <inheritdoc />
+        public void Evaluate(string input, ICommandSender sender)
+        {
+            if (input is null)
+            {
+                throw new ArgumentNullException(nameof(input));
+            }
+
+            if (sender is null)
+            {
+                throw new ArgumentNullException(nameof(sender));
+            }
+
+            ArgumentParser.Parse(input, _commandTrie.Commands.Select(c => c.Name).ToList());
+            if (string.IsNullOrWhiteSpace(ArgumentParser.CommandName))
+            {
+                _logger.LogInformation("Invalid command.");
+                return;
+            }
+
+            var command = _commandTrie.GetCommandSuggestions(ArgumentParser.CommandName)[0];
+            command.Run(sender, ArgumentParser);
+        }
 
         /// <inheritdoc />
         public void Register(object obj)
@@ -78,51 +123,6 @@ namespace Remus
 
                 command.RegisterHandler(commandHandlerSchema);
             }
-        }
-
-        /// <inheritdoc />
-        public void Deregister(object obj)
-        {
-            if (obj is null)
-            {
-                throw new ArgumentNullException(nameof(obj));
-            }
-
-            var commands = _commandTrie.Commands.ToList();
-            for (var i = 0; i < commands.Count; ++i)
-            {
-                _commandTrie.RemoveCommand(commands[i].Name);
-            }
-        }
-
-        /// <inheritdoc />
-        public IEnumerable<Command> GetCommands(Predicate<Command>? predicate = null)
-        {
-            return _commandTrie.Commands.Where(c => predicate?.Invoke(c) ?? true);
-        }
-
-        /// <inheritdoc />
-        public void Evaluate(string input, ICommandSender sender)
-        {
-            if (input is null)
-            {
-                throw new ArgumentNullException(nameof(input));
-            }
-
-            if (sender is null)
-            {
-                throw new ArgumentNullException(nameof(sender));
-            }
-
-            ArgumentParser.Parse(input, _commandTrie.Commands.Select(c => c.Name).ToList());
-            if (string.IsNullOrWhiteSpace(ArgumentParser.CommandName))
-            {
-                _logger.LogInformation("Invalid command.");
-                return;
-            }
-
-            var command = _commandTrie.GetCommandSuggestions(ArgumentParser.CommandName)[0];
-            command.Run(sender, ArgumentParser);
         }
     }
 }

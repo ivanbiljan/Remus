@@ -27,6 +27,23 @@ namespace Remus.Parsing.TypeParsers
         private readonly IDictionary<Type, ITypeParser?> _parsers = new Dictionary<Type, ITypeParser?>();
 
         /// <inheritdoc />
+        public ITypeParser? GetParser(Type type)
+        {
+            if (type.IsPrimitive || type == typeof(string))
+            {
+                return PrimitiveParsers[type];
+            }
+
+            return _parsers.GetValueOrDefault(type);
+        }
+
+        /// <inheritdoc />
+        public ITypeParser<T>? GetParser<T>()
+        {
+            return GetParser(typeof(T)) as ITypeParser<T>;
+        }
+
+        /// <inheritdoc />
         public void AddParser(Type type, ITypeParser parser)
         {
             if (type is null)
@@ -58,23 +75,6 @@ namespace Remus.Parsing.TypeParsers
         public void RemoveParser<T>()
         {
             RemoveParser(typeof(T));
-        }
-
-        /// <inheritdoc />
-        public ITypeParser<T>? GetParser<T>()
-        {
-            return GetParser(typeof(T)) as ITypeParser<T>;
-        }
-
-        /// <inheritdoc />
-        public ITypeParser? GetParser(Type type)
-        {
-            if (type.IsPrimitive || type == typeof(string))
-            {
-                return PrimitiveParsers[type];
-            }
-
-            return _parsers.GetValueOrDefault(type);
         }
     }
 }

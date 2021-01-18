@@ -12,12 +12,12 @@ namespace Remus
             Letter = letter;
         }
 
-        public char Letter { get; }
-
-        public string? Word { get; set; }
+        public IDictionary<char, TrieNode> Children { get; } = new Dictionary<char, TrieNode>();
 
         public bool IsFullWord => Word != null;
 
-        public IDictionary<char, TrieNode> Children { get; } = new Dictionary<char, TrieNode>();
+        public char Letter { get; }
+
+        public string? Word { get; set; }
     }
 }
