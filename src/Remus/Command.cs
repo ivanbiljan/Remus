@@ -23,7 +23,7 @@ namespace Remus
             [NotNull] ILogger logger,
             [NotNull] ICommandService commandService,
             [NotNull] string name,
-            object handlerObject = null)
+            object? handlerObject = null)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             CommandService = commandService ?? throw new ArgumentNullException(nameof(commandService));
