@@ -36,8 +36,12 @@ steps:
       **/*.csproj
       !**/*Vsix*.csproj
 - task: DotNetCoreCLI@2
-  displayName: Tests
+  displayName: 'Run tests with code coverage'
   inputs:
     command: test
     projects: '**/*.Tests/*.csproj'
-    arguments: '--configuration $(buildConfiguration)'
+    arguments: '--configuration $(buildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
+
+- script: |
+    %USERPROFILE%\.nuget\packages\codecov\1.1.0\tools\codecov.exe -f "./test/MyTestProject/coverage.opencover.xml" -t $(CODECOV_TOKEN)
+  displayName: Upload coverage to codecov.io
