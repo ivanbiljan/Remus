@@ -173,7 +173,7 @@ namespace Remus.Tests
                 new Command(logger.Object, commandService, "test2", commandRegistry)
             };
 
-            Assert.Equal(expected, commandService.GetCommands());
+            Assert.Equal(expected, commandService.GetCommands().OrderBy(c => c.Name));
         }
 
         [Fact]
@@ -184,7 +184,7 @@ namespace Remus.Tests
 
             commandService.Register(new TestCommandRegistry());
 
-            Assert.Equal(new[] {"test", "test2"}, commandService.GetCommands().Select(c => c.Name));
+            Assert.Equal(new[] {"test", "test2"}, commandService.GetCommands().Select(c => c.Name).OrderBy(n => n));
         }
 
         [Fact]

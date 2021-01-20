@@ -1,10 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using JetBrains.Annotations;
 
 namespace Remus
 {
+    internal static class CommandTrieExtensions
+    {
+        public static Command? GetCommand([NotNull] this CommandTrie trie, [NotNull] string name)
+        {
+            var command = trie.GetCommandSuggestions(name).ElementAtOrDefault(0);
+            return command?.Name == name ? null : command;
+        }
+    }
+    
     /// <summary>
     ///     Represents a command trie.
     /// </summary>
@@ -37,18 +47,18 @@ namespace Remus
                 var currentLetter = word[i];
                 if (!currentNode.Children.TryGetValue(currentLetter, out var nextNode))
                 {
-                    var isFullWord = i == word.Length - 1;
                     nextNode = new TrieNode(currentLetter);
-                    if (isFullWord)
-                    {
-                        _commandMap.Add(word, command);
-                        nextNode.Word = word;
-                    }
-
                     currentNode.Children.Add(currentLetter, nextNode);
                 }
 
                 currentNode = nextNode;
+
+                var isFullWord = i == word.Length - 1;
+                if (isFullWord) 
+                {
+                    _commandMap.Add(word, command);
+                    currentNode.Word = word;
+                }
             }
         }
 
@@ -67,6 +77,22 @@ namespace Remus
             {
                 AddCommand(command);
             }
+        }
+        
+        /// <summary>
+        /// Gets the command with the specified name, or <see langword="null"/> if no such command exists.
+        /// </summary>
+        /// <param name="name">The name, which must not be <see langword="null"/>.</param>
+        /// <returns>The command, or <see langword="null"/> if no such command exists.</returns>
+        public Command? GetCommand([NotNull] string name)
+        {
+            if (name is null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            var command = GetCommandSuggestions(name).ElementAtOrDefault(0);
+            return command?.Name == name ? command : null;
         }
 
         /// <summary>

@@ -106,7 +106,7 @@ namespace Remus
                     continue;
                 }
 
-                var command = _commandTrie.GetCommandSuggestions(commandHandlerAttribute.Name).ElementAtOrDefault(0);
+                var command = _commandTrie.GetCommand(commandHandlerAttribute.Name);
                 if (command != null && command.HandlerObject != obj)
                 {
                     _logger.LogWarning(
