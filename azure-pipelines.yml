@@ -14,11 +14,6 @@ pool:
 
 steps:
 - task: UseDotNet@2
-  displayName: 'Install .NET Core 3.0'
-  inputs:
-    packageType: sdk
-    version: '3.0.0'
-- task: UseDotNet@2
   displayName: 'Install .NET5 SDK'
   inputs:
     packageType: sdk
@@ -53,5 +48,5 @@ steps:
     arguments: '--configuration $(buildConfiguration) /p:CollectCoverage=true /p:CoverletOutput=..\coverageresults\coverage /p:MergeWith=..\coverageresults\coverage.json /p:CoverletOutputFormat=opencover'
 
 - script: |
-    %USERPROFILE%\.dotnet\tools\codecov.exe -f .\tests\coverageresults\coverage.opencover.xml -t $(CODECOV_TOKEN)
+    %USERPROFILE%\.nuget\packages\codecov\1.12.4\codecov.exe -f .\tests\coverageresults\coverage.opencover.xml -t $(CODECOV_TOKEN)
   displayName: Upload coverage to codecov.io
