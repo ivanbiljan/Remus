@@ -18,12 +18,10 @@ steps:
   inputs:
     packageType: sdk
     version: '5.0.x'
-- task: DotNetCoreCLI@2
+- task: CmdLine@2
   displayName: 'Install CodeCov tool'
   inputs:
-    command: 'custom'
-    custom: 'tool'
-    arguments: 'install codecov --global'
+    script: 'dotnet tool install --global Codecov.Tool --version 1.12.4'
 - task: NuGetToolInstaller@1
   displayName: 'Configure NuGet version'
   inputs:
