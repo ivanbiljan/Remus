@@ -14,7 +14,12 @@ pool:
 
 steps:
 - task: UseDotNet@2
-  displayName: 'Install .NET SDK'
+  displayName: 'Install .NET Core 3.0'
+  inputs:
+    packageType: sdk
+    version: '3.0.0'
+- task: UseDotNet@2
+  displayName: 'Install .NET5 SDK'
   inputs:
     packageType: sdk
     version: '5.0.x'
