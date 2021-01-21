@@ -32,7 +32,7 @@ steps:
   displayName: Build
   inputs:
     command: 'build'
-    projects: |
+    projects: |a
       **/*.csproj
       !**/*Vsix*.csproj
 - task: DotNetCoreCLI@2
@@ -40,8 +40,8 @@ steps:
   inputs:
     command: test
     projects: '**/*.Tests/*.csproj'
-    arguments: '--configuration $(buildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
+    arguments: '--configuration $(buildConfiguration) /p:CollectCoverage=true /p:CoverletOutput=..\coverageresults\coverage /p:MergeWith=..\coverageresults\coverage.json /p:CoverletOutputFormat="opencover"'
 
 - script: |
-    %USERPROFILE%\.nuget\packages\codecov\1.1.0\tools\codecov.exe -f "./tests/Remus.Tests/coverage.opencover.xml" -t $(CODECOV_TOKEN)
+    codecov -f .\tests\coverageresults\coverage.opencover.xml -t $(CODECOV_TOKEN)
   displayName: Upload coverage to codecov.io
