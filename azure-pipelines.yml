@@ -32,7 +32,7 @@ steps:
   displayName: Build
   inputs:
     command: 'build'
-    projects: |a
+    projects: |
       **/*.csproj
       !**/*Vsix*.csproj
 - task: DotNetCoreCLI@2
