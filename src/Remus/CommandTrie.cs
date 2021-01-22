@@ -6,15 +6,6 @@ using JetBrains.Annotations;
 
 namespace Remus
 {
-    internal static class CommandTrieExtensions
-    {
-        public static Command? GetCommand([NotNull] this CommandTrie trie, [NotNull] string name)
-        {
-            var command = trie.GetCommandSuggestions(name).ElementAtOrDefault(0);
-            return command?.Name == name ? null : command;
-        }
-    }
-    
     /// <summary>
     ///     Represents a command trie.
     /// </summary>
