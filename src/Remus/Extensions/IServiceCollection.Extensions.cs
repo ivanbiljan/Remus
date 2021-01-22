@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Linq;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Remus.Parsing.Arguments;
 using Remus.Parsing.TypeParsers;
-using Serilog;
 
 namespace Remus.Extensions
 {

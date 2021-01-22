@@ -13,9 +13,6 @@ namespace Remus.Parsing.Arguments
     internal sealed class DefaultArgumentParser : IArgumentParser
     {
         /// <inheritdoc />
-        public char[] Separators { get; } = {' ', '\t', '\n'};
-
-        /// <inheritdoc />
         public ArgumentParserResult Parse(string input, IReadOnlyCollection<string> availableCommandNames)
         {
             if (string.IsNullOrWhiteSpace(input))
@@ -41,6 +38,9 @@ namespace Remus.Parsing.Arguments
                 Options = ParseOptionals(tokens, ref index)
             };
         }
+
+        /// <inheritdoc />
+        public char[] Separators { get; } = {' ', '\t', '\n'};
 
         private static List<string> ParseArguments(IReadOnlyList<string> tokens, ref int index)
         {

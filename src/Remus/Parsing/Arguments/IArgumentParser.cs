@@ -19,6 +19,8 @@ namespace Remus.Parsing.Arguments
         /// </summary>
         /// <param name="input">The string, which must not be <see langword="null" />.</param>
         /// <param name="availableCommands">The list of available commands.</param>
-        ArgumentParserResult Parse([NotNull] string input, [NotNull] [ItemNotNull] IReadOnlyCollection<string> availableCommands);
+        ArgumentParserResult Parse(
+            [NotNull] string input,
+            [NotNull] [ItemNotNull] IReadOnlyCollection<string> availableCommands);
     }
 }

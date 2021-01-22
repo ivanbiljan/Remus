@@ -45,7 +45,7 @@ namespace Remus
                 currentNode = nextNode;
 
                 var isFullWord = i == word.Length - 1;
-                if (isFullWord) 
+                if (isFullWord)
                 {
                     _commandMap.Add(word, command);
                     currentNode.Word = word;
@@ -69,12 +69,12 @@ namespace Remus
                 AddCommand(command);
             }
         }
-        
+
         /// <summary>
-        /// Gets the command with the specified name, or <see langword="null"/> if no such command exists.
+        ///     Gets the command with the specified name, or <see langword="null" /> if no such command exists.
         /// </summary>
-        /// <param name="name">The name, which must not be <see langword="null"/>.</param>
-        /// <returns>The command, or <see langword="null"/> if no such command exists.</returns>
+        /// <param name="name">The name, which must not be <see langword="null" />.</param>
+        /// <returns>The command, or <see langword="null" /> if no such command exists.</returns>
         public Command? GetCommand([NotNull] string name)
         {
             if (name is null)
@@ -149,13 +149,8 @@ namespace Remus
             var currentNode = _root;
             RemoveHelper(currentNode, 0);
 
-            TrieNode? RemoveHelper(TrieNode? node, int currentCharacterIndex)
+            TrieNode RemoveHelper(TrieNode node, int currentCharacterIndex)
             {
-                if (node is null)
-                {
-                    return null;
-                }
-
                 if (!node.Children.TryGetValue(name[currentCharacterIndex], out var childNode))
                 {
                     return node;

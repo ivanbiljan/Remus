@@ -16,7 +16,7 @@ namespace Remus
             {
                 throw new ArgumentNullException(nameof(message));
             }
-            
+
             Console.WriteLine(message);
         }
     }

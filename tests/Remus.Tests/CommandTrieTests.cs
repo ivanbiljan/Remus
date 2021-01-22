@@ -25,6 +25,42 @@ namespace Remus.Tests
         }
 
         [Fact]
+        public void GetCommand_InvalidCommand_ReturnsNull()
+        {
+            var trie = new CommandTrie();
+            var logger = new Mock<ILogger>().Object;
+            var commandService = new Mock<ICommandService>().Object;
+            trie.AddCommand(new Command(logger, commandService, "command"));
+
+            var command = trie.GetCommand("test");
+
+            Assert.Null(command);
+        }
+
+        [Fact]
+        public void GetCommand_NullName_ThrowsArgumentNullException()
+        {
+            var trie = new CommandTrie();
+
+            Assert.Throws<ArgumentNullException>(() => trie.GetCommand(null!));
+        }
+
+        [Fact]
+        public void GetCommand_ReturnsProperCommand()
+        {
+            var trie = new CommandTrie();
+            var logger = new Mock<ILogger>().Object;
+            var commandService = new Mock<ICommandService>().Object;
+            trie.AddCommand(new Command(logger, commandService, "command"));
+            trie.AddCommand(new Command(logger, commandService, "command2"));
+
+            var command = trie.GetCommand("command");
+
+            Assert.NotNull(command);
+            Assert.Equal("command", command.Name);
+        }
+
+        [Fact]
         public void GetCommandSuggestions_BadPrefix_ReturnsEmptyList()
         {
             var trie = new CommandTrie();
@@ -96,6 +132,19 @@ namespace Remus.Tests
 
             Assert.Equal(expected, trie.GetCommandSuggestions("cmd"));
             Assert.Empty(trie.GetCommandSuggestions("sub"));
+        }
+
+        [Fact]
+        public void RemoveCommand_MisspelledCommand_DoesNothing()
+        {
+            var trie = new CommandTrie();
+            var logger = new Mock<ILogger>().Object;
+            var commandService = new Mock<ICommandService>().Object;
+            trie.AddCommand(new Command(logger, commandService, "command"));
+
+            trie.RemoveCommand("cmmand");
+
+            Assert.NotEmpty(trie.GetCommandSuggestions("com"));
         }
 
         [Fact]

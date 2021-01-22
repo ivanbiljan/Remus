@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -11,8 +7,9 @@ using Remus.Parsing.Arguments;
 using Remus.Parsing.TypeParsers;
 using Xunit;
 
-namespace Remus.Tests.Extensions {
-    public sealed class IServiceCollectionExtensionsTests 
+namespace Remus.Tests.Extensions
+{
+    public sealed class IServiceCollectionExtensionsTests
     {
         [Fact]
         public void AddRemus_NullServiceCollection_ThrowsArgumentNullException()
