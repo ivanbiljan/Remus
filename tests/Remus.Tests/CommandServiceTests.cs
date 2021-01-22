@@ -65,6 +65,8 @@ namespace Remus.Tests
         {
             var logger = new Mock<ILogger>();
             var argumentParser = new Mock<IArgumentParser>();
+            argumentParser.Setup(p => p.Parse(It.IsAny<string>(), It.IsAny<IReadOnlyCollection<string>>()))
+                          .Returns(new ArgumentParserResult(null));
             var typeParsers = new Mock<ITypeParserCollection>();
             var commandService = new CommandService(logger.Object, argumentParser.Object, typeParsers.Object);
 
