@@ -13,7 +13,7 @@ namespace Remus.Tests.Parsing.Arguments
             var argumentParser = new DefaultArgumentParser();
             var inputString = "tar  Required\\ argument  -x -v --file=\"File 1.txt\" --arg2 \"Hello, \\\"World\\\"\"";
 
-            argumentParser.Parse(inputString, new[] {"tar"});
+            var parserResult = argumentParser.Parse(inputString, new[] {"tar"});
 
             var expectedOptions = new Dictionary<string, string>
             {
@@ -23,9 +23,9 @@ namespace Remus.Tests.Parsing.Arguments
                 ["arg2"] = "Hello, \"World\""
             };
 
-            Assert.Equal("tar", argumentParser.CommandName);
-            Assert.Equal(expectedOptions, argumentParser.Options);
-            Assert.Equal(new[] {"Required argument"}, argumentParser.Arguments);
+            Assert.Equal("tar", parserResult.CommandName);
+            Assert.Equal(expectedOptions, parserResult.Options);
+            Assert.Equal(new[] {"Required argument"}, parserResult.Arguments);
         }
 
         [Fact]

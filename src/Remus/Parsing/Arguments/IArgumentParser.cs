@@ -10,26 +10,6 @@ namespace Remus.Parsing.Arguments
     public interface IArgumentParser
     {
         /// <summary>
-        ///     Gets a read-only list of arguments.
-        /// </summary>
-        IReadOnlyList<string> Arguments { get; }
-
-        /// <summary>
-        ///     Gets the command name.
-        /// </summary>
-        string CommandName { get; }
-
-        /// <summary>
-        ///     Gets a read-only list of flags.
-        /// </summary>
-        IReadOnlyList<char> Flags { get; }
-
-        /// <summary>
-        ///     Gets a read-only dictionary of options.
-        /// </summary>
-        IReadOnlyDictionary<string, string?> Options { get; }
-
-        /// <summary>
         ///     Gets an array of separators.
         /// </summary>
         char[] Separators { get; }
@@ -39,6 +19,6 @@ namespace Remus.Parsing.Arguments
         /// </summary>
         /// <param name="input">The string, which must not be <see langword="null" />.</param>
         /// <param name="availableCommands">The list of available commands.</param>
-        void Parse([NotNull] string input, [NotNull] [ItemNotNull] IReadOnlyCollection<string> availableCommands);
+        ArgumentParserResult Parse([NotNull] string input, [NotNull] [ItemNotNull] IReadOnlyCollection<string> availableCommands);
     }
 }

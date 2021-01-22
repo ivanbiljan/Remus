@@ -16,19 +16,7 @@ namespace Remus.Parsing.Arguments
         public char[] Separators { get; } = {' ', '\t', '\n'};
 
         /// <inheritdoc />
-        public IReadOnlyDictionary<string, string?> Options { get; private set; } = new Dictionary<string, string?>();
-
-        /// <inheritdoc />
-        public IReadOnlyList<char> Flags { get; } = new List<char>();
-
-        /// <inheritdoc />
-        public IReadOnlyList<string> Arguments { get; private set; } = new List<string>();
-
-        /// <inheritdoc />
-        public string? CommandName { get; private set; }
-
-        /// <inheritdoc />
-        public void Parse(string input, IReadOnlyCollection<string> availableCommandNames)
+        public ArgumentParserResult Parse(string input, IReadOnlyCollection<string> availableCommandNames)
         {
             if (string.IsNullOrWhiteSpace(input))
             {
@@ -42,14 +30,16 @@ namespace Remus.Parsing.Arguments
 
             if (availableCommandNames.Count == 0)
             {
-                return;
+                return new ArgumentParserResult(null);
             }
 
             var index = 0;
             var tokens = TokenizeInput(input);
-            CommandName = ParseCommandName(availableCommandNames, tokens, ref index);
-            Arguments = ParseArguments(tokens, ref index);
-            Options = ParseOptionals(tokens, ref index);
+            return new ArgumentParserResult(ParseCommandName(availableCommandNames, tokens, ref index))
+            {
+                Arguments = ParseArguments(tokens, ref index),
+                Options = ParseOptionals(tokens, ref index)
+            };
         }
 
         private static List<string> ParseArguments(IReadOnlyList<string> tokens, ref int index)

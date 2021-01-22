@@ -20,7 +20,7 @@ namespace Remus
         public static CommandHandlerSchema? ResolveMethodCall(
             [NotNull] Command command,
             [NotNull] ICommandSender commandSender,
-            [NotNull] IArgumentParser inputMetadata,
+            [NotNull] ArgumentParserResult inputMetadata,
             out object?[] arguments)
         {
             if (command is null)
@@ -77,7 +77,7 @@ namespace Remus
             [NotNull] ParameterInfo[] parameters,
             [NotNull] ICommandSender commandSender,
             [NotNull] ITypeParserCollection parsers,
-            [NotNull] IArgumentParser inputMetadata,
+            [NotNull] ArgumentParserResult inputMetadata,
             out object?[] arguments)
         {
             arguments = new object?[parameters.Length];

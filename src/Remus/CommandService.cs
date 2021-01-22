@@ -78,15 +78,15 @@ namespace Remus
                 throw new ArgumentNullException(nameof(sender));
             }
 
-            ArgumentParser.Parse(input, _commandTrie.Commands.Select(c => c.Name).ToList());
-            if (string.IsNullOrWhiteSpace(ArgumentParser.CommandName))
+            var parserResult = ArgumentParser.Parse(input, _commandTrie.Commands.Select(c => c.Name).ToList());
+            if (string.IsNullOrWhiteSpace(parserResult.CommandName))
             {
                 _logger.LogInformation("Invalid command.");
                 return;
             }
 
-            var command = _commandTrie.GetCommandSuggestions(ArgumentParser.CommandName)[0];
-            command.Run(sender, ArgumentParser);
+            var command = _commandTrie.GetCommandSuggestions(parserResult.CommandName)[0];
+            command.Run(sender, parserResult);
         }
 
         /// <inheritdoc />

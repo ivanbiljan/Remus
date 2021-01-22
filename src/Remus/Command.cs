@@ -88,7 +88,7 @@ namespace Remus
         /// </summary>
         /// <param name="sender">The command sender, which must not be <see langword="null" />.</param>
         /// <param name="inputData">The input metadata, which must not be <see langword="null" />.</param>
-        internal void Run([NotNull] ICommandSender sender, [NotNull] IArgumentParser inputData)
+        internal void Run([NotNull] ICommandSender sender, [NotNull] ArgumentParserResult inputData)
         {
             if (sender is null)
             {
