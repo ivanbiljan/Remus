@@ -172,10 +172,6 @@ namespace Remus
                 else
                 {
                     childNode = RemoveHelper(childNode, currentCharacterIndex + 1);
-                    if (childNode is null)
-                    {
-                        node.Children.Remove(name[currentCharacterIndex]);
-                    }
                 }
 
                 return node;
