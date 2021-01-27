@@ -1,11 +1,17 @@
-﻿using System;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Remus.Analyzers.Tests.Helpers;
 using Xunit;
 
-namespace Remus.Analyzers.Tests {
-    public sealed class OptionalArgumentAnalyzerTests : DiagnosticVerifier {
+namespace Remus.Analyzers.Tests
+{
+    public sealed class OptionalArgumentAnalyzerTests : DiagnosticVerifier
+    {
+        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+        {
+            return new OptionalArgumentAnalyzer();
+        }
+
         [Fact]
         public void MethodDoesNotHaveCommandHandlerAttribute_NoDiagnosticIsTriggered()
         {
@@ -18,22 +24,6 @@ namespace AnalyzerTest {
         }
 
         private static void CommandHandlerMethod() {
-        }
-    }
-}";
-            
-            VerifyCSharpDiagnostic(source);
-        }
-
-        [Fact]
-        public void ValidCode_NoDiagnosticIsTriggered()
-        {
-            const string source = @"
-using System;
-namespace AnalyzerTest {
-    class Program {
-        [Remus.Attributes.CommandHandler(""name"", """")]
-        private static void CommandHandlerMethod([Remus.Attributes.OptionalArgument] int x = 0) {
         }
     }
 }";
@@ -57,7 +47,8 @@ namespace AnalyzerTest {
     }
 }";
 
-            var expectedDiagnosticResult = new DiagnosticResult {
+            var expectedDiagnosticResult = new DiagnosticResult
+            {
                 Id = "Remus0001",
                 Message = new LocalizableResourceString(nameof(Resources.OptionalArgumentAnalyzerMessageFormat),
                     Resources.ResourceManager, typeof(Resources)).ToString(),
@@ -71,9 +62,20 @@ namespace AnalyzerTest {
             VerifyCSharpDiagnostic(source, expectedDiagnosticResult);
         }
 
-        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+        [Fact]
+        public void ValidCode_NoDiagnosticIsTriggered()
         {
-            return new OptionalArgumentAnalyzer();
+            const string source = @"
+using System;
+namespace AnalyzerTest {
+    class Program {
+        [Remus.Attributes.CommandHandler(""name"", """")]
+        private static void CommandHandlerMethod([Remus.Attributes.OptionalArgument] int x = 0) {
+        }
+    }
+}";
+
+            VerifyCSharpDiagnostic(source);
         }
     }
 }

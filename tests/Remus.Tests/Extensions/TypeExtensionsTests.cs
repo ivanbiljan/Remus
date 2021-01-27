@@ -1,4 +1,5 @@
-﻿using Remus.Extensions;
+﻿using System;
+using Remus.Extensions;
 using Xunit;
 
 namespace Remus.Tests.Extensions
@@ -6,7 +7,21 @@ namespace Remus.Tests.Extensions
     public sealed class TypeExtensionsTests
     {
         [Fact]
-        public void ValueType_ReturnsDefault()
+        public void GetDefaultValue_NullType_ThrowsArgumentNullException()
+        {
+            Assert.Throws<ArgumentNullException>(() => TypeExtensions.GetDefaultValue(null!));
+        }
+        
+        [Fact]
+        public void GetDefaultValue_ReferenceType_ReturnsNull()
+        {
+            var value = typeof(object).GetDefaultValue();
+
+            Assert.Null(value);
+        }
+
+        [Fact]
+        public void GetDefaultValue_ValueType_ReturnsDefault()
         {
             var value = typeof(int).GetDefaultValue();
 
@@ -14,11 +29,9 @@ namespace Remus.Tests.Extensions
         }
 
         [Fact]
-        public void ReferenceType_ReturnsNull()
+        public void GetFriendlyName_NullType_ThrowsArgumentNullException()
         {
-            var value = typeof(object).GetDefaultValue();
-
-            Assert.Null(value);
+            Assert.Throws<ArgumentNullException>(() => TypeExtensions.GetFriendlyName(null!));
         }
     }
 }

@@ -9,8 +9,14 @@ namespace Remus
     [PublicAPI]
     public sealed class ConsoleSender : ICommandSender
     {
-        public void SendMessage(string message)
+        /// <inheritdoc />
+        public void SendMessage([NotNull] string message)
         {
+            if (message is null)
+            {
+                throw new ArgumentNullException(nameof(message));
+            }
+
             Console.WriteLine(message);
         }
     }

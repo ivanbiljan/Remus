@@ -4,61 +4,58 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
-namespace Remus
+namespace Remus.Parsing.Arguments
 {
     /// <summary>
-    ///     Represents a command input analyzer. This class lexes an input string to extract meaningful information.
+    ///     Represents the default argument parser. Aims to replicate nix style option parsing and uses whitespace as argument
+    ///     separators.
     /// </summary>
-    internal sealed class InputMetadata
+    internal sealed class DefaultArgumentParser : IArgumentParser
     {
-        // Generic command syntax: commandname [options/flags] requiredArg1 requiredArg2 "required arg 3"
-
-        private InputMetadata()
-        {
-            // Don't expose the constructor
-            // Callers should rely on the Parse() method
-        }
-
-        /// <summary>
-        ///     Gets the command name.
-        /// </summary>
-        public string? CommandName { get; private init; }
-
-        /// <summary>
-        ///     Gets a read-only collection of required arguments.
-        /// </summary>
-        public IReadOnlyList<string> RequiredArguments { get; private init; } = null!;
-
-        /// <summary>
-        ///     Gets a read-only collection of option-value pairs.
-        /// </summary>
-        public IReadOnlyDictionary<string, string?> Options { get; private init; } = null!;
-
-        /// <summary>
-        ///     Parses a given input string by trying to match it against a list of available command names.
-        /// </summary>
-        /// <param name="input">The input string.</param>
-        /// <param name="availableCommandNames">A readonly collection of available command names.</param>
-        public static InputMetadata Parse(string input, IReadOnlyCollection<string> availableCommandNames)
+        /// <inheritdoc />
+        public ArgumentParserResult Parse(string input, IReadOnlyCollection<string> availableCommandNames)
         {
             if (string.IsNullOrWhiteSpace(input))
             {
                 throw new ArgumentException("Input must not be null or empty.", nameof(input));
             }
 
-            Debug.Assert(input.Length <= 1024);
+            if (availableCommandNames is null)
+            {
+                throw new ArgumentNullException(nameof(availableCommandNames));
+            }
+
+            if (availableCommandNames.Count == 0)
+            {
+                return new ArgumentParserResult(null);
+            }
 
             var index = 0;
             var tokens = TokenizeInput(input);
-            var commandName = ParseCommandName(availableCommandNames, tokens, ref index);
-            var arguments = ParseArguments(tokens, ref index);
-            var options = ParseOptionals(tokens, ref index);
-            return new InputMetadata
+            return new ArgumentParserResult(ParseCommandName(availableCommandNames, tokens, ref index))
             {
-                CommandName = commandName,
-                Options = options,
-                RequiredArguments = arguments
+                Arguments = ParseArguments(tokens, ref index),
+                Options = ParseOptionals(tokens, ref index)
             };
+        }
+
+        /// <inheritdoc />
+        public char[] Separators { get; } = {' ', '\t', '\n'};
+
+        private static List<string> ParseArguments(IReadOnlyList<string> tokens, ref int index)
+        {
+            var arguments = new List<string>();
+            for (; index < tokens.Count; ++index)
+            {
+                if (tokens[index][0] == '-')
+                {
+                    break;
+                }
+
+                arguments.Add(tokens[index]);
+            }
+
+            return arguments;
         }
 
         private static string? ParseCommandName(
@@ -137,28 +134,12 @@ namespace Remus
             return options;
         }
 
-        private static List<string> ParseArguments(IReadOnlyList<string> tokens, ref int index)
-        {
-            var arguments = new List<string>();
-            for (; index < tokens.Count; ++index)
-            {
-                if (tokens[index][0] == '-')
-                {
-                    break;
-                }
-
-                arguments.Add(tokens[index]);
-            }
-
-            return arguments;
-        }
-
         /// <summary>
         ///     Parses arguments from the specified input string. Supports quotation marks and escape characters.
         /// </summary>
         /// <param name="input">The input string.</param>
         /// <returns>A read-only list of tokens (arguments) extracted from the input string.</returns>
-        private static IReadOnlyList<string> TokenizeInput(string input)
+        private IReadOnlyList<string> TokenizeInput(string input)
         {
             var parameters = new List<string>();
             var stringBuilder = new StringBuilder(input.Length);
@@ -169,6 +150,7 @@ namespace Remus
                 switch (currentCharacter)
                 {
                     case '\\':
+                    {
                         if (isEscaped)
                         {
                             stringBuilder.Append(currentCharacter);
@@ -177,26 +159,6 @@ namespace Remus
                         }
 
                         isEscaped = true;
-                        break;
-                    case ' ':
-                    case '\t':
-                    case '\n':
-                    {
-                        if (inQuotes || isEscaped)
-                        {
-                            stringBuilder.Append(currentCharacter);
-                            isEscaped = false;
-                        }
-                        else
-                        {
-                            if (stringBuilder.Length == 0)
-                            {
-                                continue;
-                            }
-
-                            CommitPendingArgument();
-                        }
-
                         break;
                     }
 
@@ -220,8 +182,31 @@ namespace Remus
                     }
 
                     default:
-                        stringBuilder.Append(currentCharacter);
+                    {
+                        if (!Separators.Contains(currentCharacter))
+                        {
+                            stringBuilder.Append(currentCharacter);
+                        }
+                        else
+                        {
+                            if (inQuotes || isEscaped)
+                            {
+                                stringBuilder.Append(currentCharacter);
+                                isEscaped = false;
+                            }
+                            else
+                            {
+                                if (stringBuilder.Length == 0)
+                                {
+                                    continue;
+                                }
+
+                                CommitPendingArgument();
+                            }
+                        }
+
                         break;
+                    }
                 }
             }
 

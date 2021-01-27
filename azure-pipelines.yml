@@ -14,9 +14,14 @@ pool:
 
 steps:
 - task: UseDotNet@2
+  displayName: 'Install .NET5 SDK'
   inputs:
     packageType: sdk
     version: '5.0.x'
+- task: CmdLine@2
+  displayName: 'Install CodeCov tool'
+  inputs:
+    script: 'dotnet tool install --global Codecov.Tool --version 1.12.4'
 - task: NuGetToolInstaller@1
   displayName: 'Configure NuGet version'
   inputs:
@@ -36,8 +41,12 @@ steps:
       **/*.csproj
       !**/*Vsix*.csproj
 - task: DotNetCoreCLI@2
-  displayName: Tests
+  displayName: 'Run tests with code coverage'
   inputs:
-    command: test
+    command: 'test'
     projects: '**/*.Tests/*.csproj'
-    arguments: '--configuration $(buildConfiguration)'
+    arguments: '--configuration $(buildConfiguration) /p:CollectCoverage=true /p:CoverletOutput=..\coverageresults\coverage /p:MergeWith=..\coverageresults\coverage.json /p:CoverletOutputFormat=opencover'
+
+- script: |
+    %USERPROFILE%\.nuget\packages\codecov\1.12.4\tools\codecov.exe -f .\tests\coverageresults\coverage.opencover.xml -t $(CODECOV_TOKEN)
+  displayName: Upload coverage to codecov.io

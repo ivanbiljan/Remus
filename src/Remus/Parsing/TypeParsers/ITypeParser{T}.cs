@@ -1,4 +1,4 @@
-﻿namespace Remus.TypeParsing
+﻿namespace Remus.Parsing.TypeParsers
 {
     /// <summary>
     ///     Describes a generic type parser.
@@ -20,9 +20,9 @@
         new T Parse(string input);
 
         /// <summary>
-        /// Attempts to parse a given string into the specified type. Returns a boolean value indicating the success.
+        ///     Attempts to parse a given string into the specified type. Returns a boolean value indicating the success.
         /// </summary>
-        /// <param name="input">The input string, which must not be <see langword="null"/>.</param>
+        /// <param name="input">The input string, which must not be <see langword="null" />.</param>
         /// <param name="obj">The parsed object.</param>
         /// <returns>A boolean value indicating the success.</returns>
         bool TryParse(string input, out T obj);

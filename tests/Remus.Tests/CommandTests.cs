@@ -1,5 +1,6 @@
 ﻿using System;
-using Remus.TypeParsing;
+using Microsoft.Extensions.Logging;
+using Moq;
 using Xunit;
 
 namespace Remus.Tests
@@ -7,43 +8,33 @@ namespace Remus.Tests
     public sealed class CommandTests
     {
         [Fact]
-        public void Ctor_NullCommandManager_ThrowsArgumentNullException()
+        public void Ctor_IsCorrect()
         {
-            Assert.Throws<ArgumentNullException>(() => new Command(null!, ""));
-        }
+            var logger = new Mock<ILogger>();
+            var commandService = new Mock<ICommandService>();
 
-        [Fact]
-        public void Ctor_NullName_ThrowsArgumentNullException()
-        {
-            Assert.Throws<ArgumentNullException>(() => new Command(new CommandManager(new Parsers()), null!));
-        }
-
-        [Fact]
-        public void Name_IsCorrect()
-        {
-            var command = new Command(new CommandManager(new Parsers()), "test");
+            var command = new Command(logger.Object, commandService.Object, "test");
 
             Assert.Equal("test", command.Name);
         }
 
         [Fact]
-        public void Equals_CommandsNotEqual_ReturnsFalse()
+        public void Ctor_NullCommandService_ThrowsArgumentNullException()
         {
-            var commandManager = new CommandManager(new Parsers());
-            var command1 = new Command(commandManager, "test");
-            var command2 = new Command(commandManager, "test2");
-
-            Assert.False(command1.Equals(command2));
+            Assert.Throws<ArgumentNullException>(() => new Command(new Mock<ILogger>().Object, null!, "test"));
         }
 
         [Fact]
-        public void Equals_CommandsEqual_ReturnsTrue()
+        public void Ctor_NullLogger_ThrowsArgumentNullException()
         {
-            var commandManager = new CommandManager(new Parsers());
-            var command1 = new Command(commandManager, "test");
-            var command2 = new Command(commandManager, "test");
+            Assert.Throws<ArgumentNullException>(() => new Command(null!, new Mock<ICommandService>().Object, "test"));
+        }
 
-            Assert.True(command1.Equals(command2));
+        [Fact]
+        public void Ctor_NullName_ThrowsArgumentNullException()
+        {
+            Assert.Throws<ArgumentNullException>(() =>
+                new Command(new Mock<ILogger>().Object, new Mock<ICommandService>().Object, null!));
         }
     }
 }

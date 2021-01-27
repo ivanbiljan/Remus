@@ -17,9 +17,14 @@ namespace Remus.Attributes
         /// <param name="name">The name.</param>
         public OptionalArgumentAttribute(string name, string description)
         {
-            Name = name;
-            Description = description;
+            Name = name ?? throw new ArgumentNullException(nameof(name));
+            Description = description ?? throw new ArgumentNullException(nameof(description));
         }
+
+        /// <summary>
+        ///     Gets the description.
+        /// </summary>
+        public string Description { get; }
 
         /// <summary>
         ///     Gets the name.
@@ -30,10 +35,5 @@ namespace Remus.Attributes
         ///     Gets or sets the short name.
         /// </summary>
         public string? ShortName { get; set; }
-
-        /// <summary>
-        ///     Gets the description.
-        /// </summary>
-        public string Description { get; }
     }
 }
