@@ -1,5 +1,7 @@
 # Remus
 
+[![Build Status](https://dev.azure.com/ibiljan/Remus/_apis/build/status/ivanbiljan.Remus?branchName=development)](https://dev.azure.com/ibiljan/Remus/_build/latest?definitionId=1&branchName=development) [![codecov](https://codecov.io/gh/ivanbiljan/Remus/branch/development/graph/badge.svg?token=ET6QQZLJ4E)](https://codecov.io/gh/ivanbiljan/Remus)
+
 Remus is a cross-platform, nix-style command-line parsing library. It is designed with simplicity, flexibility, and testability in mind while handling most basic (as well as advanced) use-cases.  It acts as a middleman between your application and the end-user, and aims to facilitate command interpretation in interactive systems.
 
 ## Features
