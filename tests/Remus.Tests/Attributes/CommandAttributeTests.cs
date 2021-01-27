@@ -46,7 +46,7 @@ namespace Remus.Tests.Attributes
 
             Assert.Null(command.Syntax);
 
-            command.HelpText = "Syntax";
+            command.Syntax = "Syntax";
 
             Assert.Equal("Syntax", command.Syntax);
         }
