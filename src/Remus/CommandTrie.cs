@@ -166,16 +166,12 @@ namespace Remus
 
                     if (childNode.Children.Count == 0)
                     {
-                        childNode = null;
+                        currentNode.Children.Remove(name[currentCharacterIndex]);
                     }
                 }
                 else
                 {
-                    childNode = RemoveHelper(childNode, currentCharacterIndex + 1);
-                    if (childNode is null)
-                    {
-                        node.Children.Remove(name[currentCharacterIndex]);
-                    }
+                    RemoveHelper(childNode, currentCharacterIndex + 1);
                 }
 
                 return node;

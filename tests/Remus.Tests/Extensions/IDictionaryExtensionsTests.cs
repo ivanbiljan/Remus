@@ -16,6 +16,16 @@ namespace Remus.Tests.Extensions
         }
 
         [Fact]
+        public void GetValueOrDefault_KeyExists_ReturnsMappedValue()
+        {
+            var dictionary = new Dictionary<string, string> {["key"] = "value"};
+
+            var value = IDictionaryExtensions.GetValueOrDefault(dictionary, "key");
+
+            Assert.Equal("value", value);
+        }
+
+        [Fact]
         public void GetValueOrDefault_NullDictionary_ThrowsArgumentNullException()
         {
             Assert.Throws<ArgumentNullException>(() =>
