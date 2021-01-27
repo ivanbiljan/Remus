@@ -1,10 +1,12 @@
 ﻿using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Remus.Analyzers
 {
+    [ExcludeFromCodeCoverage]
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class RemusAnalyzersAnalyzer : DiagnosticAnalyzer
     {

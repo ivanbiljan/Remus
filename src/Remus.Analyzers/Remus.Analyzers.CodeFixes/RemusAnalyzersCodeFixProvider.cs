@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
 using System.Composition;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,6 +13,7 @@ using Microsoft.CodeAnalysis.Rename;
 
 namespace Remus.Analyzers
 {
+    [ExcludeFromCodeCoverage]
     [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(RemusAnalyzersCodeFixProvider))]
     [Shared]
     public class RemusAnalyzersCodeFixProvider : CodeFixProvider

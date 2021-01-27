@@ -149,7 +149,7 @@ namespace Remus
             var currentNode = _root;
             RemoveHelper(currentNode, 0);
 
-            TrieNode RemoveHelper(TrieNode node, int currentCharacterIndex)
+            TrieNode? RemoveHelper(TrieNode node, int currentCharacterIndex)
             {
                 if (!node.Children.TryGetValue(name[currentCharacterIndex], out var childNode))
                 {
