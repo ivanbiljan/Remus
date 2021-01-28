@@ -48,6 +48,12 @@ namespace Remus
         }
 
         /// <inheritdoc />
+        public IEnumerable<Command> GetCommands(string name)
+        {
+            return _commandTrie.GetCommandSuggestions(name);
+        }
+
+        /// <inheritdoc />
         public ITypeParserCollection TypeParsers { get; }
 
         /// <inheritdoc />

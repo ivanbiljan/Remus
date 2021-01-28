@@ -43,6 +43,13 @@ namespace Remus
         IEnumerable<Command> GetCommands(Predicate<Command>? predicate = null);
 
         /// <summary>
+        /// Returns an enumerable collection of commands that match the given name.
+        /// </summary>
+        /// <param name="name">The name, which must not be <see langword="null"/>.</param>
+        /// <returns></returns>
+        IEnumerable<Command> GetCommands([NotNull] string name);
+
+        /// <summary>
         ///     Registers commands defined by the specified object.
         /// </summary>
         /// <param name="obj">The object, which must not be <see langword="null" />.</param>
