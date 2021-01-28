@@ -67,6 +67,11 @@ namespace Remus
             var commands = _commandTrie.Commands.ToList();
             for (var i = 0; i < commands.Count; ++i)
             {
+                if (commands[i].HandlerObject != obj)
+                {
+                    continue;
+                }
+                
                 _commandTrie.RemoveCommand(commands[i].Name);
             }
         }
