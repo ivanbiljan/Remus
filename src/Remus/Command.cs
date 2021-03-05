@@ -116,5 +116,26 @@ namespace Remus
                 _logger.LogError($"Something went wrong while executing command '{Name}':\n{ex}");
             }
         }
+
+        /// <summary>
+        /// Runs the specified command against the given input string.
+        /// </summary>
+        /// <param name="sender">The sender, which must not be <see langword="null"/>.</param>
+        /// <param name="input">The input string, which must not be <see langword="null"/>.</param>
+        public void Run([NotNull] ICommandSender sender, [NotNull] string input)
+        {
+            if (sender is null)
+            {
+                throw new ArgumentNullException(nameof(sender));
+            }
+
+            if (input is null)
+            {
+                throw new ArgumentNullException(nameof(input));
+            }
+
+            var inputData = CommandService.ArgumentParser.Parse(input, new[] {Name});
+            Run(sender, inputData);
+        }
     }
 }
