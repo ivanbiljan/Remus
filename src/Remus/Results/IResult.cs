@@ -8,6 +8,8 @@ namespace Remus.Results {
     /// <summary>
     /// Defines a contract that describes the result of an action.
     /// </summary>
-    public interface IResult {
+    public interface IResult
+    {
+        bool IsSuccess { get; }
     }
 }
